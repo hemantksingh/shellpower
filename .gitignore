@@ -7,4 +7,4 @@ out
 *.nupkg
 **/*/bin
 **/*/obj
-packages
+**/*/nuget/lib
