@@ -1,0 +1,41 @@
+image:
+- Visual Studio 2017
+
+services:
+  - iis
+  - mssql2017
+
+install:
+  - ps: |
+        function AddToPath([string] $path) {
+  
+          $key = "PATH"
+          $currentPath = [Environment]::GetEnvironmentVariable($key, "Machine")
+
+          if($currentPath.Contains($path)) {
+            Write-Warning "'$path' already exists in $key, nothing added"
+            return
+          }  
+  
+          Write-Host "Adding '$path' to $key"
+          if($path.EndsWith(";")) {
+            $newPath = $currentPath + "$path;"
+          }else {
+            $newPath = $currentPath + ";$path;"
+          }
+          [Environment]::SetEnvironmentVariable($key, $newPath, "Machine")
+        }
+  - ps: choco install make
+  - ps: AddToPath "C:\ProgramData\chocolatey\lib\make\tools\bin"
+  
+before_build:
+  - cmd: make --version
+
+build_script:
+  - cmd: make build
+
+after_build:
+  - cmd: make package
+  
+artifacts:
+  - path: '**\*.nupkg' # push all *.nupkg files in build directory recursively

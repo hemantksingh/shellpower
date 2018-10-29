@@ -1,0 +1,10 @@
+.idea
+.vs
+.vscode
+*.user
+out
+*.zip
+*.nupkg
+**/*/bin
+**/*/obj
+packages
