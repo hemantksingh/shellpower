@@ -35,7 +35,9 @@ build_script:
   - cmd: make build
 
 after_build:
-  - cmd: make package
-  
-artifacts:
-  - path: '**\*.nupkg' # push all *.nupkg files in build directory recursively
+  - cmd: make package BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
+  - cmd: make push BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
+
+environment:
+  NUGET_KEY:
+    secure: tzj3LLvlwYJq8RZVqhN+h/Qi6PPcazjdg7iIPvL32TEXwhUxtaqLgin4o+N1nhaF

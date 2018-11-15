@@ -96,6 +96,8 @@ function Create-VirtualApp (
         [string] $appPool,
         [Parameter(mandatory=$true)]
         [string] $physicalPath) {
+      
+      Write-Host "Creating virtial app '$name'"
 
       if(-Not (Test-Path $physicalPath)) {
         Write-Warning "'$physicalPath' does not exist. Creating it"

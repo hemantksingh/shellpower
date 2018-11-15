@@ -1,7 +1,8 @@
 .PHONY: build package
 
 APPLICATION?=iisconfig
-APP_VERSION?=1.0.0-alpha
+BUILD_NUMBER?=0
+APP_VERSION?=1.0.$(BUILD_NUMBER)-alpha
 PUBLISH_DIR=${CURDIR}/out/$(APPLICATION)
 NUGET_SOURCE=https://api.nuget.org/v3/index.json
 
