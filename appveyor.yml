@@ -35,6 +35,7 @@ build_script:
   - cmd: make build
 
 after_build:
+  - cmd: make test 
   - cmd: make package BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
   - cmd: make push BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
 

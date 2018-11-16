@@ -11,7 +11,7 @@ $artifactDir = "$currentDir\lib"
 $ErrorActionPreference = "Stop"
 
 Write-Host "Copying contents $publishDir to $artifactDir"
-Copy-Item $publishDir -Destination $artifactDir -Recurse -Force
+Copy-Item $publishDir -Filter "*.ps1" -Destination $artifactDir -Recurse -Force
 
 (Get-Content $nuspec) -replace "<version>.*</version>", "<version>$($version)</version>" | Set-Content $nuspec
 
