@@ -3,12 +3,17 @@
   <metadata>
     <id>shellpower.iisconfig</id>
     <version>1.0.0-alpha</version>
+    <title>shellpower.iisconfig</title>
     <authors>hemantksingh</authors>
     <owners>hemantksingh</owners>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://raw.githubusercontent.com/hemantksingh/shellpower/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/hemantksingh/shellpower</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Provides powershell cmdlets for setting up and configuring web applications in IIS</description>
-    <releaseNotes></releaseNotes>
+    <summary>This package includes the powersehll cmdlets, which can be referenced by your powersehll scripts for performing common iis configuration operations.</summary>
+    <releaseNotes>This package includes the powersehll cmdlets, which can be referenced by your powersehll scripts for performing common iis configuration operations.</releaseNotes>
     <copyright>Copyright (2018)</copyright>
-    <tags></tags>
+    <language>Powershell</language>
+    <tags>powershell</tags>
   </metadata>
 </package>

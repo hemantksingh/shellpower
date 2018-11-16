@@ -10,16 +10,9 @@ $artifactDir = "$currentDir\lib"
 
 $ErrorActionPreference = "Stop"
 
-if (Test-Path $artifactDir) {
-    Write-Host "Removing '$artifactDir'"
-    Remove-item  -Path $artifactDir -Recurse -ErrorAction SilentlyContinue
-}else {
-    Write-Host "Creating '$artifactDir'"
-    New-Item -ItemType Directory -Force -Path $artifactDir
-}
-
-Copy-Item $publishDir\*.ps1 $artifactDir
+Write-Host "Copying contents $publishDir to $artifactDir"
+Copy-Item $publishDir -Destination $artifactDir -Recurse -Force
 
 (Get-Content $nuspec) -replace "<version>.*</version>", "<version>$($version)</version>" | Set-Content $nuspec
 
-nuget pack $nuspec -exclude "*.nupkg" -exclude "*.nuspec"
+nuget pack $nuspec -exclude "*.nupkg;*.nuspec;nugetpack.ps1"
