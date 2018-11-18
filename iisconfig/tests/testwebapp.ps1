@@ -30,4 +30,12 @@ function Test-WebsiteSetupCanBeRepeated {
     Setup-Website -username "sample-user" -password "apassword"    
 }
 
-Test-WebsiteSetupCanBeRepeated
+# Test-WebsiteSetupCanBeRepeated
+
+New-WebAppPool "shellpower" -Force
+
+New-Website `
+      -Name "shellpower" `
+      -Port 80  `
+      -PhysicalPath "C:\inetpub\shellpower" `
+      -ApplicationPool "shellpower"
