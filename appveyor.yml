@@ -35,7 +35,7 @@ build_script:
   - cmd: make build
 
 after_build:
-  - ps: iisconfig\tests\testwebapp.ps1 -source C:\projects\shellpower\iisconfig\src
+  - ps: iisconfig\tests\testwebapp.ps1 -source iisconfig\src
   - cmd: make package BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
   
 artifacts:

@@ -4,8 +4,9 @@ param (
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "Importing from source $source"
+$source = (Get-Item -Path $source -Verbose).FullName
 
+Write-Host "Importing from source $source"
 . $source/webapp.ps1
 
 function Setup-Website(
