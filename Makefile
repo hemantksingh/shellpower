@@ -30,4 +30,4 @@ install:
 	-source $(NUGET_SOURCE)
 
 test:
-	powershell $(APPLICATION)/tests/testwebapp.ps1 -source ${CURDIR}/$(APPLICATION)/src
+	powershell $(APPLICATION)/tests/testwebapp.ps1 -source $(APPLICATION)/src

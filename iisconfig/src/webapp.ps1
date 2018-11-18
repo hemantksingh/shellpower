@@ -1,12 +1,33 @@
 Import-Module WebAdministration
 
+function Create-Website (
+        [Parameter(mandatory=$true)]
+        [string] $name,
+        [Parameter(mandatory=$true)]
+        [int] $port,
+        [Parameter(mandatory=$true)]
+        [string] $appPool,
+        [Parameter(mandatory=$true)]
+        [string] $physicalPath) {
+
+    Write-Host "Creating website '$name'"
+    Ensure-PathExists $physicalPath
+    Delete-Website $name
+
+    New-Website `
+      -Name $name `
+      -Port $port  `
+      -PhysicalPath $physicalPath `
+      -ApplicationPool $appPool `
+}
+
 function Delete-Website([Parameter(mandatory=$true)]
                     [string] $name) {
 
   $exists = (Get-Website -Name $name).Name -eq $name
 
   if($exists) {
-    Write-Warning "App '$name' exists, removing it"
+    Write-Host "App '$name' exists, deleting it"
     Remove-WebSite -Name $name
   } else {
     Write-Warning "'$name' not found, nothing deleted"
@@ -18,15 +39,15 @@ function AppPool-Exists([Parameter(mandatory=$true)]
     return (Test-Path IIS:\AppPools\$name)
 }
 
-function Create-AppPool([Parameter(mandatory=$true)]
-                        [string] $name,
+function Create-AppPool([Parameter(mandatory=$true)][string] $name,
                         [string] $runtimeVersion) {
 
-  if((Test-Path IIS:\AppPools\$name)) {
+  Write-Host "Creating new AppPool '$name'"
+  if((AppPool-Exists $name)) {
       Write-Warning "AppPool '$name' already exists, removing it"
       Remove-WebAppPool $name
   }
-  Write-Host "Creating new AppPool '$name'"
+  
   $appPool = New-WebAppPool "$name" -Force
   $appPool.processModel.identityType = "ApplicationPoolIdentity"
   $appPool | Set-Item
@@ -57,26 +78,6 @@ function Create-AppPoolWithIdentity([Parameter(mandatory=$true)]
       $appPool | Set-Item
 }
 
-function Create-Website (
-        [Parameter(mandatory=$true)]
-        [string] $name,
-        [Parameter(mandatory=$true)]
-        [int] $port,
-        [Parameter(mandatory=$true)]
-        [string] $appPool,
-        [Parameter(mandatory=$true)]
-        [string] $physicalPath) {
-
-    Ensure-PathExists $physicalPath
-    Delete-Website $name
-
-    New-Website `
-      -Name $name `
-      -Port $port  `
-      -PhysicalPath $physicalPath `
-      -ApplicationPool $appPool `
-}
-
 function Ensure-PathExists([Parameter(mandatory=$true)][string] $path) {  
   if(-Not (Test-Path $path)) {
     Write-Warning "'$path' does not exist. Creating it"
@@ -94,7 +95,7 @@ function Create-WebApplication (
         [Parameter(mandatory=$true)]
         [string] $physicalPath) {
       
-      Write-Host "Creating virtial app '$name'"
+      Write-Host "Creating web application '$name'"
 
       Ensure-PathExists $physicalPath
 
