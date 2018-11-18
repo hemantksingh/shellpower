@@ -18,11 +18,11 @@ function Setup-Website(
     
     $appPoolName = $shellpowerSite
     Create-AppPool -name $appPoolName
-    Create-App -name $shellpowerSite -port 80 -appPool $appPoolName -physicalPath "$root\$shellpowerSite"
+    Create-Website -name $shellpowerSite -port 80 -appPool $appPoolName -physicalPath "$root\$shellpowerSite"
   
     $appPoolName = "{0}_{1}" -f $shellpowerSite, $shellpowerApi
     Create-AppPoolWithIdentity -name $appPoolName -username $username -password $password
-    Create-VirtualApp -name $shellpowerApi -siteName $shellpowerSite -appPool $appPoolName -physicalPath "$root\$shellpowerApi"
+    Create-WebApplication -name $shellpowerApi -siteName $shellpowerSite -appPool $appPoolName -physicalPath "$root\$shellpowerApi"
 }
 
 function Test-WebsiteSetupCanBeRepeated {

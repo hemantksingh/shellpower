@@ -1,6 +1,6 @@
 Import-Module WebAdministration
 
-function Delete-App([Parameter(mandatory=$true)]
+function Delete-Website([Parameter(mandatory=$true)]
                     [string] $name) {
 
   $exists = (Get-Website -Name $name).Name -eq $name
@@ -57,7 +57,7 @@ function Create-AppPoolWithIdentity([Parameter(mandatory=$true)]
       $appPool | Set-Item
 }
 
-function Create-App (
+function Create-Website (
         [Parameter(mandatory=$true)]
         [string] $name,
         [Parameter(mandatory=$true)]
@@ -65,29 +65,26 @@ function Create-App (
         [Parameter(mandatory=$true)]
         [string] $appPool,
         [Parameter(mandatory=$true)]
-        [string] $physicalPath,
-        [bool] $deleteDefaultSite=$false ) {
+        [string] $physicalPath) {
 
-      if($deleteDefaultSite) {
-        Delete-App 'Default Web Site'
-      }
+    Ensure-PathExists $physicalPath
+    Delete-Website $name
 
-      Write-Host "Checking path '$physicalPath'"
-      if(-Not (Test-Path -Path $physicalPath)) {
-        Write-Warning "'$physicalPath' does not exist. Creating it"
-        md -Force $physicalPath
-      }
-
-      Delete-App $name
-
-      New-Website `
-        -Name $name `
-        -Port $port  `
-        -PhysicalPath $physicalPath `
-        -ApplicationPool $appPool `
+    New-Website `
+      -Name $name `
+      -Port $port  `
+      -PhysicalPath $physicalPath `
+      -ApplicationPool $appPool `
 }
 
-function Create-VirtualApp (
+function Ensure-PathExists([Parameter(mandatory=$true)][string] $path) {  
+  if(-Not (Test-Path $path)) {
+    Write-Warning "'$path' does not exist. Creating it"
+    mkdir -Force $path
+  }
+}
+
+function Create-WebApplication (
         [Parameter(mandatory=$true)]
         [string] $name,
         [Parameter(mandatory=$true)]
@@ -99,10 +96,7 @@ function Create-VirtualApp (
       
       Write-Host "Creating virtial app '$name'"
 
-      if(-Not (Test-Path $physicalPath)) {
-        Write-Warning "'$physicalPath' does not exist. Creating it"
-        md -Force $physicalPath
-      }
+      Ensure-PathExists $physicalPath
 
       New-WebApplication `
         -Site $siteName `
