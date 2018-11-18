@@ -22,7 +22,7 @@ function Create-AppPool([Parameter(mandatory=$true)]
                         [string] $name,
                         [string] $runtimeVersion) {
 
-  if((AppPool-Exists $name)) {
+  if((Test-Path IIS:\AppPools\$name)) {
       Write-Warning "AppPool '$name' already exists, removing it"
       Remove-WebAppPool $name
   }
