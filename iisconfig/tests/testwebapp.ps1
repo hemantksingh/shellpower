@@ -1,10 +1,12 @@
 param (
-  [Parameter(mandatory=$true)][string] $packages
+  [Parameter(mandatory=$true)][string] $source
 )
 
 $ErrorActionPreference = "Stop"
 
-. $packages/lib/webapp.ps1
+Write-Host "Importing from source $source"
+
+. $source/webapp.ps1
 
 function Setup-Website(
     [Parameter(mandatory=$true)][string] $username,

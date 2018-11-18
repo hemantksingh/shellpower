@@ -23,10 +23,11 @@ push:
 	-Source $(NUGET_SOURCE) \
 	-ApiKey $(NUGET_KEY)
 
-test:
+install:
 	nuget install shellpower.$(APPLICATION) \
 	-version $(APP_VERSION) \
 	-OutputDirectory $(PACKAGES_DIR) \
 	-source $(NUGET_SOURCE)
-	powershell $(APPLICATION)/tests/testwebapp.ps1 -packages $(PACKAGES_DIR)/$(PACKAGE)
-	
+
+test:
+	powershell $(APPLICATION)/tests/testwebapp.ps1 -source ${CURDIR}/$(APPLICATION)/src
