@@ -26,7 +26,8 @@ function Configure-User(
 $server = new-object Microsoft.SqlServer.Management.Smo.Server($dbServer)
 
 function Test-DbConfigurationCanBeRepeated {
-    $userLogin = Create-Login $server "test-user" "test-passw0rd!"
+    $dbUser = "test-user"
+    $userLogin = Create-Login $server $dbUser "test-passw0rd!"
     Add-LoginToServerRole $server $userLogin.Name "dbcreator"
 
     $db = Create-Db $server $dbName
