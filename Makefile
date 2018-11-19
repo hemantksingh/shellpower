@@ -18,7 +18,7 @@ package: build
 	-version $(APP_VERSION) \
 	-publishDir $(PUBLISH_DIR)
 
-push: 
+push: package
 	nuget push ${CURDIR}/$(PACKAGE).nupkg \
 	-Source $(NUGET_SOURCE) \
 	-ApiKey $(NUGET_KEY)
