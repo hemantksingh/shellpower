@@ -1,9 +1,7 @@
 param (
   [Parameter(mandatory=$true)][string] $source,
   [Parameter(Mandatory = $true)][string] $dbServer,
-  $dbName="testdb",
-  [Parameter(Mandatory = $true)][string] $dbUser,
-  [Parameter(Mandatory = $true)][string] $dbPassword
+  $dbName="testdb"
 )
 
 $ErrorActionPreference = "Stop"
@@ -27,14 +25,16 @@ function Configure-User(
 [reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo")
 $server = new-object Microsoft.SqlServer.Management.Smo.Server($dbServer)
 
-$userLogin = Create-Login $server $dbUser $dbPassword
-Add-LoginToServerRole $server $userLogin.Name "dbcreator"
-
 function Test-DbConfigurationCanBeRepeated {
+    $userLogin = Create-Login $server "test-user" "test-passw0rd!"
+    Add-LoginToServerRole $server $userLogin.Name "dbcreator"
+
     $db = Create-Db $server $dbName
     Configure-User $db $dbUser
 
     $db = Create-Db $server $dbName
     Configure-User $db $dbUser
 }
+
+Test-DbConfigurationCanBeRepeated
                                                                                            

@@ -3,7 +3,7 @@
 function Create-Login(
     [Parameter(mandatory = $true)][Microsoft.SqlServer.Management.Smo.Server] $server,
     [Parameter(mandatory = $true)][string] $loginName,
-    [Parameter(mandatory = $true)][string] $password) {
+    [string] $password) {
     
     Write-Host "Creating login '$loginName' on server '$server'"
     if ($server.Logins.Contains($loginName)) {
