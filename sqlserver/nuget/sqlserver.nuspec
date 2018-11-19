@@ -10,8 +10,8 @@
     <projectUrl>https://github.com/hemantksingh/shellpower</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Provides powershell cmdlets for managing and configuring sql server in a repeatable manner, ideal for continuous integration/deployment scenarios.</description>
-    <summary>This package includes the powershell cmdlets, which can be referenced by your powershell scripts for performing common sql server configuration operations.</summary>
-    <releaseNotes>This package includes the powershell cmdlets, which can be referenced by your powershell scripts for performing common sql server configuration operations in a repeatable manner, ideal for continuous integration/deployment scenarios.</releaseNotes>
+    <summary>This package includes the powershell cmdlets, which can be referenced by your powershell scripts for performing common sql server configuration operations in a repeatable manner, ideal for continuous integration/deployment scenarios.</summary>
+    <releaseNotes>This package includes the powershell cmdlets, which can be referenced by your powershell scripts for performing common sql server configuration operations.</releaseNotes>
     <copyright>Copyright (2018)</copyright>
     <language>Powershell</language>
     <tags>powershell sqlserver cicd</tags>
