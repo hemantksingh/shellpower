@@ -42,7 +42,7 @@ Provides powershell cmdlets for managing and configuring sql server in a repeata
     . packages\bin\sqlserver.ps1
 
     [reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo")
-    $server = new-object Microsoft.SqlServer.Management.Smo.Server($dbServer)
+    $server = new-object Microsoft.SqlServer.Management.Smo.Server("localhost")
     
     Create-Login $server "test-user" "test-passw0rd!"
     ```
