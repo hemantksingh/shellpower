@@ -26,8 +26,12 @@ push:
 install:
 	nuget install shellpower.$(APPLICATION) \
 	-version $(APP_VERSION) \
-	-OutputDirectory $(PACKAGES_DIR) \
+	-outputdirectory $(PACKAGES_DIR) \
 	-source $(NUGET_SOURCE)
 
 test:
 	powershell $(APPLICATION)/tests/testwebapp.ps1 -source $(APPLICATION)/src
+
+test-package:install
+	powershell $(APPLICATION)/tests/testwebapp.ps1 -source $(PACKAGES_DIR)/$(PACKAGE)/bin
+

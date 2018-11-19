@@ -6,7 +6,7 @@ param(
 
 $currentDir = $PSScriptRoot
 $nuspec = "$currentDir\$application.nuspec"
-$artifactDir = "$currentDir\lib"
+$artifactDir = "$currentDir\bin"
 
 $ErrorActionPreference = "Stop"
 

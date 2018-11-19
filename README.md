@@ -14,7 +14,7 @@ Provides powershell cmdlets for setting up and configuring web applications in I
 
     ```powershell
 
-    . packages\webapp.ps1
+    . packages\bin\webapp.ps1
 
     Create-AppPoolWithIdentity -name "testappPool" -username "test-user" -password "test-password"
     ```
