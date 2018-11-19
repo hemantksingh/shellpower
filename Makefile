@@ -30,8 +30,8 @@ install:
 	-source $(NUGET_SOURCE)
 
 test:
-	powershell $(APPLICATION)/tests/testwebapp.ps1 -source $(APPLICATION)/src
+	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(APPLICATION)/src
 
 test-package:install
-	powershell $(APPLICATION)/tests/testwebapp.ps1 -source $(PACKAGES_DIR)/$(PACKAGE)/bin
+	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(PACKAGES_DIR)/$(PACKAGE)/bin
 

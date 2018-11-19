@@ -7,7 +7,7 @@ $ErrorActionPreference = "Stop"
 $source = (Get-Item -Path $source -Verbose).FullName
 
 Write-Host "Importing from source $source"
-. $source/webapp.ps1
+. $source/iisconfig.ps1
 
 function Setup-Website(
     [Parameter(mandatory=$true)][string] $username,
