@@ -32,11 +32,14 @@ before_build:
   - cmd: make --version
 
 build_script:
-  - cmd: make build
+  - cmd: make build APPLICATION=iisocnfig
+  - cmd: make build APPLICATION=sqlserver
 
 after_build:
   - ps: iisconfig\tests\testwebapp.ps1 -source iisconfig\src
-  - cmd: make package BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
+  - cmd: make package APPLICATION=iisocnfig BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
+  - ps: sqlserver\tests\testsqlserver.ps1 -source sqlserver\src -dbServer (local)\SQL2017 -dbUser=sa -dbPassword Passw0rd12!
+  - cmd: make package APPLICATION=sqlserver BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
   
 artifacts:
   - path: '**\*.nupkg' # push all *.nupkg files in build directory recursively
