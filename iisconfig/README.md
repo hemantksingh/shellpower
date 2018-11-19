@@ -13,9 +13,9 @@ Provides powershell cmdlets for setting up and configuring web applications in I
 * Create new file `getting-started.ps1` with the following content
 
     ```powershell
-    
+
     # dot source the script
-    . packages\bin\webapp.ps1
+    . packages\bin\iisconfig.ps1
 
     Create-AppPoolWithIdentity -name "testappPool" -username "test-user" -password "test-password"
     ```

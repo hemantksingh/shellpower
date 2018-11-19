@@ -40,9 +40,9 @@ build_script:
   - cmd: make build APPLICATION=sqlserver
 
 after_build:
-  - ps: iisconfig\tests\testwebapp.ps1 -source iisconfig\src
+  - ps: iisconfig\tests\iisconfigtest.ps1 -source iisconfig\src
   - cmd: make package APPLICATION=iisconfig BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
-  - ps: sqlserver\tests\testsqlserver.ps1 -source sqlserver\src -dbServer "(local)\SQL2017"
+  - ps: sqlserver\tests\sqlservertest.ps1 -source sqlserver\src -dbServer "(local)\SQL2017"
   - cmd: make package APPLICATION=sqlserver BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
   
 artifacts:
