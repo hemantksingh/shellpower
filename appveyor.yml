@@ -38,7 +38,7 @@ build_script:
 after_build:
   - ps: iisconfig\tests\testwebapp.ps1 -source iisconfig\src
   - cmd: make package APPLICATION=iisconfig BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
-  - ps: sqlserver\tests\testsqlserver.ps1 -source sqlserver\src -dbServer (local)\SQL2017 -dbUser=sa -dbPassword Passw0rd12!
+  - ps: sqlserver\tests\testsqlserver.ps1 -source sqlserver\src -dbServer "(local)\SQL2017" -dbUser=sa -dbPassword "Passw0rd12!"
   - cmd: make package APPLICATION=sqlserver BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
   
 artifacts:
