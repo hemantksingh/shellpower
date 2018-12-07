@@ -1,7 +1,35 @@
-# Fails with "FailedOperationException" if the password does not meet
-# sql server complexity requirements
+param (
+  [Parameter(Mandatory = $true)][string] $dbServer,
+  [Parameter(mandatory=$true)][string] $dbName
+)
+
+[reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo")
+$_server = new-object Microsoft.SqlServer.Management.Smo.Server($dbServer)
+
 $currentDir = Split-Path $script:MyInvocation.MyCommand.Path
 . $currentDir\dbuser.ps1
+
+function Add-SqlUser (
+    [Parameter(mandatory=$true)][PSObject]$sqlUser) {
+    
+    $userLogin = Create-Login $_server $sqlUser.name $sqlUser.password
+    Add-LoginToServerRoles $_server $userLogin.Name $sqlUser.serverRoles
+
+    $db = Create-Db $_server $dbName
+    Add-UserToDb $db $sqlUser.name
+    Add-UserToDbRoles $db $sqlUser.name $sqlUser.dbRoles
+}
+
+function Remove-SqlUser(
+    [Parameter(mandatory=$true)][string] $sqlUser) {
+   
+    $db = Get-Db $_server $dbName
+    Remove-UserFromDb $db $sqlUser
+    Remove-LoginFromServer $_server $sqlUser
+}
+
+# Fails with "FailedOperationException" if the password does not meet
+# sql server complexity requirements
 function Create-Login(
     [Parameter(mandatory = $true)][Microsoft.SqlServer.Management.Smo.Server] $server,
     [Parameter(mandatory = $true)][string] $loginName,
@@ -29,35 +57,6 @@ function Create-Login(
         $login.Create()
     }
     return $login
-}
-
-function Add-SqlUser (
-    [Parameter(mandatory=$true)][string] $dbServer,
-    [Parameter(mandatory=$true)][string] $dbName,
-    [Parameter(mandatory=$true)][PSObject]$sqlUser) {
-    
-    [reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo")
-    $server = new-object Microsoft.SqlServer.Management.Smo.Server($dbServer)
-    
-    $userLogin = Create-Login $server $sqlUser.name $sqlUser.password
-    Add-LoginToServerRoles $server $userLogin.Name $sqlUser.serverRoles
-
-    $db = Create-Db $server $dbName
-    Add-UserToDb $db $sqlUser.name
-    Add-UserToDbRoles $db $sqlUser.name $sqlUser.dbRoles
-}
-
-function Remove-SqlUser(
-    [Parameter(mandatory=$true)][string] $dbServer,
-    [Parameter(mandatory=$true)][string] $dbName,
-    [Parameter(mandatory=$true)][string] $sqlUser) {
-
-    [reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo")
-    $server = new-object Microsoft.SqlServer.Management.Smo.Server($dbServer)
-    $db = Get-Db $server $dbName
-
-    Remove-UserFromDb $db $sqlUser
-    Remove-LoginFromServer $server $sqlUser
 }
 
 function Remove-LoginFromServer(
