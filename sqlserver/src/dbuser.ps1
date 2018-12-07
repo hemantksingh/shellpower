@@ -4,13 +4,15 @@ function Create-SqlUser (
     [System.Array] $serverRoles,
     [System.Array] $dbRoles) {
     
-    if(!$serverRoles) { 
-        Write-Host "No server role(s) specified" 
-        $serverRoles = @("dbcreator")
+    if(!$serverRoles) {
+        $defaultServerRole = "dbcreator" 
+        Write-Host "No server role(s) specified, default server role '$defaultServerRole' will be used" 
+        $serverRoles = @($defaultServerRole)
     }
     if(!$dbRoles) { 
-        Write-Host "No db role(s) specified" 
-        $dbRoles = @("db_datareader")
+        $defaultDbRole = "db_datareader" 
+        Write-Host "No db role(s) specified, default db role '$defaultDbRole' will be used"
+        $dbRoles = @($defaultDbRole)
     }
 
     $sqlUser = New-Object -TypeName PSObject

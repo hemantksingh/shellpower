@@ -15,16 +15,13 @@ Provides powershell cmdlets for managing and configuring sql server in a repeata
     ```powershell
 
     # dot source the script
-    . packages\bin\sqlserver.ps1
+    . packages\bin\sqlserver.ps1 -dbServer "localhost" -dbName "foo"
 
-    [reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo")
-    $server = new-object Microsoft.SqlServer.Management.Smo.Server("localhost")
+    # Create sql user and assign it to db "foo"
+    Add-SqlUser -sqlUser (Create-SqlUser "bar" "test-passw0rd!")
 
-    # Create sql login
-    Create-Login $server "test-user" "testpassw0rd!"
-
-    # Create windows login
-    Create-Login $server "testdomain\testuser"
+    # Remove sql user from db "foo" and sql logins
+    Remove-SqlUser -sqlUser "bar"
     ```
 
 * Run `.\getting-started.ps1`

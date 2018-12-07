@@ -21,8 +21,8 @@ function Test-SqlUserCanBeConfiguredWithRoles {
 }
 
 function Test-SqlUserCanBeRemoved {
-    Add-SqlUser -sqlUser (Create-SqlUser "pod" "test-passw0rd!")
-    Remove-SqlUser -sqlUser "pod"
+    Add-SqlUser -sqlUser (Create-SqlUser "lol" "test-passw0rd!")
+    Remove-SqlUser -sqlUser "lol"
 }
 
 Test-SqlUserCanBeConfiguredWithRoles
