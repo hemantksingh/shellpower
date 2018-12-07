@@ -45,12 +45,21 @@ function Add-LoginToServerRole(
     [Parameter(mandatory = $true)][Microsoft.SqlServer.Management.Smo.Server] $server,
     [Parameter(mandatory = $true)][string] $loginName,
     [Parameter(mandatory = $true)][string] $roleName) {
+
     Write-Host "Adding login '$loginName' to server role '$roleName'"
     $role = $server.Roles[$roleName]
     $role.AddMember($loginName)
     $role.Alter()
 }
 
+function Add-LoginToServerRoles(
+    [Parameter(mandatory = $true)][Microsoft.SqlServer.Management.Smo.Server] $server,
+    [Parameter(mandatory = $true)][string] $loginName,
+    [Parameter(mandatory = $true)][System.Array] $roleNames) {
+        $roleNames | foreach-object  {
+            Add-LoginToServerRole $server $loginName $_
+        }
+}
 function Create-Db(
     [Parameter(mandatory = $true)][Microsoft.SqlServer.Management.Smo.Server] $server,
     [Parameter(mandatory = $true)][string] $name) {
