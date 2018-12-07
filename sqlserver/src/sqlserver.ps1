@@ -105,6 +105,15 @@ function Add-UserToDbRole(
     $role.Alter()
 }
 
+function Add-UserToDbRoles(
+    [Parameter(mandatory = $true)][Microsoft.SqlServer.Management.Smo.Database]$database,
+    [Parameter(mandatory = $true)][string] $user,
+    [Parameter(mandatory = $true)][System.Array] $roleNames) {
+        $roleNames | foreach-object  {
+            Add-UserToDbRole $database $user $_
+        }
+}
+
 function Remove-UserFromDb(
     [Parameter(mandatory = $true)][Microsoft.SqlServer.Management.Smo.Database]$database,
     [Parameter(mandatory = $true)][string] $user) {
