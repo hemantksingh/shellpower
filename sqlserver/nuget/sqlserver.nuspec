@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>shellpower.sqlserver</id>
-    <version>1.0.1-alpha</version>
+    <version>1.0.4-alpha</version>
     <title>shellpower.sqlserver</title>
     <authors>hemantksingh</authors>
     <owners>hemantksingh</owners>
