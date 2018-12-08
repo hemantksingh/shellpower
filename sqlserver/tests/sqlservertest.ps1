@@ -39,7 +39,7 @@ function Test-WindowsUserCanBeRemoved {
     Remove-DbUser -dbUser "example\win-user"
 }
 
-Test-WindowsUserCanBeAddedWithRoles
-Test-WindowsUserCanBeRemoved
+# Test-WindowsUserCanBeAddedWithRoles
+# Test-WindowsUserCanBeRemoved
 Test-SqlUserCanBeConfiguredWithRoles
 Test-SqlUserCanBeRemoved
