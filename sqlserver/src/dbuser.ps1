@@ -1,6 +1,6 @@
-function Create-SqlUser (
+function Create-DbUser (
     [Parameter(mandatory=$true)][string] $name,
-    [Parameter(mandatory=$true)][string] $password,
+    [string] $password,
     [System.Array] $serverRoles,
     [System.Array] $dbRoles) {
     
@@ -15,11 +15,13 @@ function Create-SqlUser (
         $dbRoles = @($defaultDbRole)
     }
 
-    $sqlUser = New-Object -TypeName PSObject
-    $sqlUser | Add-Member -Name 'name' -MemberType Noteproperty -Value $name
-    $sqlUser | Add-Member -Name 'password' -MemberType Noteproperty -Value $password
-    $sqlUser | Add-Member -Name 'serverRoles' -MemberType Noteproperty -Value $serverRoles
-    $sqlUser | Add-Member -Name 'dbRoles' -MemberType Noteproperty -Value $dbRoles
+    $dbUser = New-Object -TypeName PSObject
+    $dbUser | Add-Member -Name 'name' -MemberType Noteproperty -Value $name
+    $dbUser | Add-Member -Name 'serverRoles' -MemberType Noteproperty -Value $serverRoles
+    $dbUser | Add-Member -Name 'dbRoles' -MemberType Noteproperty -Value $dbRoles
+    if($password) {
+        $dbUser | Add-Member -Name 'password' -MemberType Noteproperty -Value $password
+    }
     
-    return $sqlUser
+    return $dbUser    
 }

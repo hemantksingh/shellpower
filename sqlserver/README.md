@@ -18,10 +18,10 @@ Provides powershell cmdlets for managing and configuring sql server in a repeata
     . packages\bin\sqlserver.ps1 -dbServer "localhost" -dbName "foo"
 
     # Create sql user and assign it to db "foo"
-    Add-SqlUser -sqlUser (Create-SqlUser "bar" "test-passw0rd!")
+    Add-DbUser -dbUser (Create-DbUser "bar" "test-passw0rd!")
 
     # Remove sql user from db "foo" and sql logins
-    Remove-SqlUser -sqlUser "bar"
+    Remove-DbUser -dbUser "bar"
     ```
 
 * Run `.\getting-started.ps1`

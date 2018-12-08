@@ -12,18 +12,34 @@ Write-Host "Importing from source $source"
 . $source\sqlserver.ps1 -dbServer $dbServer -dbName $dbName
 
 function Test-SqlUserCanBeConfiguredWithRoles {
-    $user = Create-SqlUser "bar" "test-passw0rd!" `
-        -serverRoles @("dbcreator", "bulkadmin", "sysadmin") `
-        -dbRoles @("db_datareader", "db_datawriter", "db_ddladmin", "db_owner")
+    $user = Create-DbUser "bar" "test-passw0rd!" `
+            -serverRoles @("dbcreator", "bulkadmin", "sysadmin") `
+            -dbRoles @("db_datareader", "db_datawriter", "db_ddladmin", "db_owner")
   
-    Add-SqlUser -sqlUser $user
-    Add-SqlUser -sqlUser $user
+    Add-DbUser -dbUser $user
+    Add-DbUser -dbUser $user
 }
 
 function Test-SqlUserCanBeRemoved {
-    Add-SqlUser -sqlUser (Create-SqlUser "lol" "test-passw0rd!")
-    Remove-SqlUser -sqlUser "lol"
+    Add-DbUser -dbUser (Create-DbUser "lol" "test-passw0rd!")
+    Remove-DbUser -dbUser "lol"
 }
 
+function Test-WindowsUserCanBeAddedWithRoles {
+    $user = Create-DbUser `
+            -name "example\win-user" `
+            -serverRoles @("dbcreator", "bulkadmin", "sysadmin") `
+            -dbRoles @("db_datareader", "db_datawriter", "db_ddladmin", "db_owner")
+  
+    Add-DbUser -dbUser $user
+}
+
+function Test-WindowsUserCanBeRemoved {
+    Add-DbUser -dbUser (Create-DbUser "example\win-user")
+    Remove-DbUser -dbUser "example\win-user"
+}
+
+Test-WindowsUserCanBeAddedWithRoles
+Test-WindowsUserCanBeRemoved
 Test-SqlUserCanBeConfiguredWithRoles
 Test-SqlUserCanBeRemoved

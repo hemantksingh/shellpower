@@ -9,23 +9,23 @@ $_server = new-object Microsoft.SqlServer.Management.Smo.Server($dbServer)
 $currentDir = Split-Path $script:MyInvocation.MyCommand.Path
 . $currentDir\dbuser.ps1
 
-function Add-SqlUser (
-    [Parameter(mandatory=$true)][PSObject]$sqlUser) {
+function Add-DbUser (
+    [Parameter(mandatory=$true)][PSObject]$dbUser) {
     
-    $userLogin = Create-Login $_server $sqlUser.name $sqlUser.password
-    Add-LoginToServerRoles $_server $userLogin.Name $sqlUser.serverRoles
+    $userLogin = Create-Login $_server $dbUser.name $dbUser.password
+    Add-LoginToServerRoles $_server $userLogin.Name $dbUser.serverRoles
 
     $db = Create-Db $_server $dbName
-    Add-UserToDb $db $sqlUser.name
-    Add-UserToDbRoles $db $sqlUser.name $sqlUser.dbRoles
+    Add-UserToDb $db $dbUser.name
+    Add-UserToDbRoles $db $dbUser.name $dbUser.dbRoles
 }
 
-function Remove-SqlUser(
-    [Parameter(mandatory=$true)][string] $sqlUser) {
+function Remove-DbUser(
+    [Parameter(mandatory=$true)][string] $dbUser) {
    
     $db = Get-Db $_server $dbName
-    Remove-UserFromDb $db $sqlUser
-    Remove-LoginFromServer $_server $sqlUser
+    Remove-UserFromDb $db $dbUser
+    Remove-LoginFromServer $_server $dbUser
 }
 
 # Fails with "FailedOperationException" if the password does not meet
