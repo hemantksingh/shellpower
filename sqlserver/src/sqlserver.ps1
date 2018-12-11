@@ -9,9 +9,12 @@ $_server = new-object Microsoft.SqlServer.Management.Smo.Server($dbServer)
 $currentDir = Split-Path $script:MyInvocation.MyCommand.Path
 . $currentDir\dbuser.ps1
 
-function Add-DbUser (
-    [Parameter(mandatory=$true)][PSObject]$dbUser) {
+function Add-DbUser ([Parameter(mandatory=$true)][string] $name,
+                    [string] $password,
+                    [System.Array] $serverRoles,
+                    [System.Array] $dbRoles) {
     
+    $dbUser = Create-DbUser $name $password $serverRoles $dbRoles                        
     $userLogin = Create-Login $_server $dbUser.name $dbUser.password
     Add-LoginToServerRoles $_server $userLogin.Name $dbUser.serverRoles
 
