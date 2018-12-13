@@ -32,6 +32,11 @@ install:
 test:
 	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(APPLICATION)/src
 
+DBSERVER?=localhost
+test-sqlserver:
+	powershell "$(APPLICATION)/tests/sqlservertest.ps1 -dbServer \"$(DBSERVER)\""
+	powershell "$(APPLICATION)/tests/sqlcmdtest.ps1 -dbServer \"$(DBSERVER)\""
+
 test-package:install
 	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(PACKAGES_DIR)/$(PACKAGE)/bin
 
