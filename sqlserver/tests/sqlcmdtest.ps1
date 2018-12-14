@@ -18,3 +18,4 @@ Add-DbUser $dbUser $dbPassword
 Invoke-InlineSql "SELECT name FROM master.dbo.sysdatabases" -dbUser $dbUser -dbPassword $dbPassword
 Remove-DbUser $dbUser
 
+# Invoke-InlineSql "SELECT name FROM master.dbo.sysdatabases"

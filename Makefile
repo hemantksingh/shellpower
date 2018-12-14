@@ -20,7 +20,7 @@ package: build
 
 push: package
 	nuget push ${CURDIR}/$(PACKAGE).nupkg \
-	-Source $(NUGET_SOURCE) \
+	-Source $(NUGET_SOURCE) \	
 	-ApiKey $(NUGET_KEY)
 
 install:
@@ -35,7 +35,7 @@ test:
 DBSERVER?=localhost
 test-sqlserver:
 	powershell "$(APPLICATION)/tests/sqlservertest.ps1 -dbServer \"$(DBSERVER)\""
-	powershell "$(APPLICATION)/tests/sqlcmdtest.ps1 -dbServer \"$(DBSERVER)\"" -Debug
+	powershell "$(APPLICATION)/tests/sqlcmdtest.ps1 -dbServer \"$(DBSERVER)\""
 
 test-package:install
 	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(PACKAGES_DIR)/$(PACKAGE)/bin

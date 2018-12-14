@@ -41,7 +41,7 @@ function Create-Login(
     
     Write-Host "Creating login '$loginName' on server '$server'"
     if ($server.Logins.Contains($loginName)) {
-        Write-Host "Login '$loginName' already exists, nothing created"
+        Write-Warning "Login '$loginName' already exists, nothing created"
         return $server.Logins[$loginName]
     }
 
@@ -127,7 +127,7 @@ function Add-UserToDb(
     
     Write-Host "Adding user '$user' to database '$database'"
     if ($database.Users.Contains($user)) {
-        Write-Host "User '$user' already exists, nothing added"
+        Write-Warning "User '$user' already exists, nothing added"
         return
     }
     
