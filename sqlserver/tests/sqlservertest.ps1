@@ -1,6 +1,7 @@
 param (
   [Parameter(Mandatory = $true)][string] $dbServer,
-  $dbName="foo"
+  [string]$dbName="foo",
+  [string]$winUser
 )
 
 $ErrorActionPreference = "Stop"
@@ -22,18 +23,23 @@ function Test-SqlUserCanBeRemoved {
     Remove-DbUser "lol"
 }
 
-function Test-WindowsUserCanBeAddedWithRoles {
-    Add-DbUser -name "example\win-user" `
+function Test-WindowsUserCanBeAddedWithRoles (
+    [Parameter(Mandatory = $true)][string] $winUser) {
+    
+    Add-DbUser -name $winUser `
         -serverRoles @("dbcreator", "bulkadmin", "sysadmin") `
         -dbRoles @("db_datareader", "db_datawriter", "db_ddladmin", "db_owner")
 }
 
 function Test-WindowsUserCanBeRemoved {
-    Add-DbUser "example\win-user"
-    Remove-DbUser "example\win-user"
+    Add-DbUser $winUser
+    Remove-DbUser $winUser
 }
 
-# Test-WindowsUserCanBeAddedWithRoles
-# Test-WindowsUserCanBeRemoved
+if(![string]::IsNullOrEmpty($winUser)) {
+    Test-WindowsUserCanBeAddedWithRoles $winUser
+    Test-WindowsUserCanBeRemoved $winUser
+}
+
 Test-SqlUserCanBeConfiguredWithRoles
 Test-SqlUserCanBeRemoved

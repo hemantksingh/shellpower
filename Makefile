@@ -34,8 +34,9 @@ test:
 
 DBSERVER?=localhost
 USE_TRUSTED_CONNECTION?=true
+#WIN_USER?=example\win-user
 test-sqlserver:
-	powershell "$(APPLICATION)/tests/sqlservertest.ps1 -dbServer \"$(DBSERVER)\""
+	powershell "$(APPLICATION)/tests/sqlservertest.ps1 -dbServer \"$(DBSERVER)\" -winUser \"$(WIN_USER)\""
 	powershell "$(APPLICATION)/tests/sqlcmdtest.ps1 -dbServer \"$(DBSERVER)\" -useTrustedConnection $(USE_TRUSTED_CONNECTION)"
 
 test-package:install

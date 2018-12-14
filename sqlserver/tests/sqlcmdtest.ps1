@@ -31,7 +31,6 @@ function Test-InlineSqlQueryWithTrustedConnection {
 
 if($_useTrustedConnection) {
   Test-InlineSqlQueryWithTrustedConnection
-  Test-InlineSqlQueryWithDbCreds
-} else {
-  Test-InlineSqlQueryWithDbCreds
-}
+} 
+
+Test-InlineSqlQueryWithDbCreds
