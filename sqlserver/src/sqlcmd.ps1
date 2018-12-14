@@ -24,7 +24,12 @@ function Invoke-InlineSql(
         $sqlQuery = "USE $dbName " + $sqlQuery
     }
 
-    if($trustedConnection) {
+    if($dbUser -and $dbPassword) {
+        Write-Debug "Disabling trusted connection"
+        $trustedConnection=$false
+    }
+
+    if($trustedConnection -eq $true) {
         Write-Host "Using trusted connection to connect to '$dbServer'"
         $out = sqlcmd -S $dbServer -E -Q $sqlQuery -b
     } else  {
