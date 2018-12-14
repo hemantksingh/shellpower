@@ -15,7 +15,7 @@ function Handle-Result(
 }
 function Invoke-InlineSql(
     [Parameter(mandatory=$true)][string] $sqlQuery,
-    [string] $trustedConnection=$true,
+    [bool] $trustedConnection=$true,
     [string] $dbUser,
     [string] $dbPassword) {
         
@@ -29,7 +29,7 @@ function Invoke-InlineSql(
         $trustedConnection=$false
     }
 
-    if($trustedConnection -eq $true) {
+    if($trustedConnection) {
         Write-Host "Using trusted connection to connect to '$dbServer'"
         $out = sqlcmd -S $dbServer -E -Q $sqlQuery -b
     } else  {
@@ -40,3 +40,46 @@ function Invoke-InlineSql(
     Handle-Result $sqlQuery $out
 }
 
+function Invoke-SqlFile(
+    [Parameter(mandatory=$true)][string] $sqlFile,
+    [bool] $trustedConnection=$true,
+    [string] $dbUser,
+    [string] $dbPassword) {
+    
+    if($dbUser -and $dbPassword) {
+        Write-Debug "Disabling trusted connection"
+        $trustedConnection=$false
+    }
+
+    if($trustedConnection) {
+        Write-Host "Using trusted connection to connect to '$dbServer'"
+        $out = sqlcmd -S $dbServer -E -i $sqlFile -b
+    } else  {
+        Write-Host "Using db credentials to connect to '$dbServer'"
+        $out = sqlcmd -S $dbServer -U $dbUser -P $dbPassword -i $sqlFile -b
+    }
+
+    Handle-Result $sqlFile $out
+}
+
+function Run-SqlCommand([Parameter(mandatory=$true)][string] $sql,
+    [bool] $trustedConnection=$true,
+    [bool] $isFile=$false,
+    [string] $dbUser,
+    [string] $dbPassword) {
+    
+        if($dbUser -and $dbPassword) {
+            Write-Debug "Disabling trusted connection"
+            $trustedConnection=$false
+        }
+    
+        if($isFile) {$params = "-i $sql -b"} else {$params = "-Q $sql -b"}
+        if($trustedConnection -eq $true) {
+            Write-Host "Using trusted connection to connect to '$dbServer'"
+            $out = sqlcmd -S $dbServer -E $params
+        } else  {
+            Write-Host "Using db credentials to connect to '$dbServer'"
+            $out = sqlcmd -S $dbServer -U $dbUser -P $dbPassword $params
+        }
+        Handle-Result $sqlQuery $out
+}
