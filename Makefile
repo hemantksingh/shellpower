@@ -33,9 +33,10 @@ test:
 	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(APPLICATION)/src
 
 DBSERVER?=localhost
+USE_TRUSTED_CONNECTION?=true
 test-sqlserver:
 	powershell "$(APPLICATION)/tests/sqlservertest.ps1 -dbServer \"$(DBSERVER)\""
-	powershell "$(APPLICATION)/tests/sqlcmdtest.ps1 -dbServer \"$(DBSERVER)\""
+	powershell "$(APPLICATION)/tests/sqlcmdtest.ps1 -dbServer \"$(DBSERVER)\" -useTrustedConnection $(USE_TRUSTED_CONNECTION)"
 
 test-package:install
 	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(PACKAGES_DIR)/$(PACKAGE)/bin
