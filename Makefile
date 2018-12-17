@@ -20,7 +20,7 @@ package: build
 
 push: package
 	nuget push ${CURDIR}/$(PACKAGE).nupkg \
-	-Source $(NUGET_SOURCE) \
+	-Source $(NUGET_SOURCE) \	
 	-ApiKey $(NUGET_KEY)
 
 install:
@@ -31,6 +31,13 @@ install:
 
 test:
 	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(APPLICATION)/src
+
+DBSERVER?=localhost
+USE_TRUSTED_CONNECTION?=true
+#WIN_USER?=example\win-user
+test-sqlserver:
+	powershell "$(APPLICATION)/tests/sqlservertest.ps1 -dbServer \"$(DBSERVER)\" -winUser \"$(WIN_USER)\""
+	powershell "$(APPLICATION)/tests/sqlcmdtest.ps1 -dbServer \"$(DBSERVER)\" -useTrustedConnection $(USE_TRUSTED_CONNECTION)"
 
 test-package:install
 	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(PACKAGES_DIR)/$(PACKAGE)/bin
