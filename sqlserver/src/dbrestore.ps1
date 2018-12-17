@@ -3,7 +3,7 @@ function Get-RestoreSql(
     [Parameter(mandatory=$true)][string] $backupFile
 ) {
     if(-Not (Test-Path $backupFile)) {
-        throw "'$backupFile' is not a valid path"
+        throw "Unable to find file '$backupFile'"
     }
 
     return "ALTER DATABASE [$dbToRestore] SET SINGLE_USER WITH ROLLBACK IMMEDIATE

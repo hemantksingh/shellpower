@@ -68,18 +68,19 @@ function Run-SqlCommand([Parameter(mandatory=$true)][string] $sql,
     [string] $dbUser,
     [string] $dbPassword) {
     
-        if($dbUser -and $dbPassword) {
-            Write-Debug "Disabling trusted connection"
-            $trustedConnection=$false
-        }
+    if($dbUser -and $dbPassword) {
+        Write-Debug "Disabling trusted connection"
+        $trustedConnection=$false
+    }
+
+    if($isFile) {$params = "-i $sql -b"} else {$params = "-Q $sql -b"}
+    if($trustedConnection -eq $true) {
+        Write-Host "Using trusted connection to connect to '$dbServer'"
+        $out = sqlcmd -S $dbServer -E $params
+    } else  {
+        Write-Host "Using db credentials to connect to '$dbServer'"
+        $out = sqlcmd -S $dbServer -U $dbUser -P $dbPassword $params
+    }
     
-        if($isFile) {$params = "-i $sql -b"} else {$params = "-Q $sql -b"}
-        if($trustedConnection -eq $true) {
-            Write-Host "Using trusted connection to connect to '$dbServer'"
-            $out = sqlcmd -S $dbServer -E $params
-        } else  {
-            Write-Host "Using db credentials to connect to '$dbServer'"
-            $out = sqlcmd -S $dbServer -U $dbUser -P $dbPassword $params
-        }
-        Handle-Result $sqlQuery $out
+    Handle-Result $sqlQuery $out
 }
