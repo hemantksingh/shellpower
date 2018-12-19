@@ -14,7 +14,7 @@ function Backup-Db(
     $query = "BACKUP DATABASE [$dbName] TO  DISK = N'$dbBackupFile' WITH NOFORMAT, INIT,  NAME = N'$backupName', SKIP, NOREWIND, NOUNLOAD,  STATS = 10
     GO"
     Write-Host "Backing up database '$dbName' to file '$dbBackupFile'"
-    Invoke-InlineSql -sqlQuery $restoreQuery
+    Invoke-InlineSql -sqlQuery $query
 }
 
 # Tail log backups captures records on the transaction log that were written since the last transaction log backup. 
