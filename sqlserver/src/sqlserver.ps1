@@ -9,7 +9,7 @@ $_server = new-object Microsoft.SqlServer.Management.Smo.Server($dbServer)
 $currentDir = Split-Path $script:MyInvocation.MyCommand.Path
 . $currentDir\dbuser.ps1
 . $currentDir\db.ps1
-. $currentDir\sqlcmd.ps1 -dbServer $dbServer -dbName $dbName
+. $currentDir\sqlcmd.ps1 -dbServer $dbServer
 
 function Add-DbUser ([Parameter(mandatory=$true)][string] $name,
                     [string] $password,
