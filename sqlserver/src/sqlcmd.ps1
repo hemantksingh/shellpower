@@ -1,6 +1,5 @@
 param (
-  [Parameter(Mandatory = $true)][string] $dbServer,
-  [string] $dbName
+  [Parameter(Mandatory = $true)][string] $dbServer
 )
 
 function Handle-Result(
@@ -19,21 +18,16 @@ function Invoke-InlineSql(
     [string] $dbUser,
     [string] $dbPassword) {
         
-    if($dbName) {
-        Write-Host "Using database '$dbName'"
-        $sqlQuery = "USE $dbName " + $sqlQuery
-    }
-
     if($dbUser -and $dbPassword) {
         Write-Debug "Disabling trusted connection"
         $trustedConnection=$false
     }
 
     if($trustedConnection) {
-        Write-Host "Using trusted connection to connect to '$dbServer'"
+        Write-Host "Running query using trusted connection on '$dbServer'"
         $out = sqlcmd -S $dbServer -E -Q $sqlQuery -b
     } else  {
-        Write-Host "Using db credentials to connect to '$dbServer'"
+        Write-Host "Running query using db credentials on '$dbServer'"
         $out = sqlcmd -S $dbServer -U $dbUser -P $dbPassword -Q $sqlQuery -b
     }
 

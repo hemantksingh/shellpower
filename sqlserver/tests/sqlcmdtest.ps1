@@ -11,14 +11,14 @@ $source = (Get-Item -Path ".\sqlserver\src\" -Verbose).FullName
 
 Write-Host "Importing from source $source"
 . $source\sqlserver.ps1 -dbServer $dbServer -dbName $dbName
-. $source\sqlcmd.ps1 -dbServer $dbServer -dbName $dbName
+. $source\sqlcmd.ps1 -dbServer $dbServer
 
 $dbUser="hero"
 $dbPassword="Passw0rd1"
 
 function Test-InlineSqlQueryWithDbCreds {
   Add-DbUser $dbUser $dbPassword
-  Invoke-InlineSql "SELECT name FROM master.dbo.sysdatabases" `
+  Invoke-InlineSql "USE [$dbName] SELECT name FROM master.dbo.sysdatabases" `
     -dbUser $dbUser `
     -dbPassword $dbPassword
 
@@ -26,7 +26,7 @@ function Test-InlineSqlQueryWithDbCreds {
 }
 
 function Test-InlineSqlQueryWithTrustedConnection {
-  Invoke-InlineSql "SELECT name FROM master.dbo.sysdatabases"
+  Invoke-InlineSql "USE [$dbName] SELECT name FROM master.dbo.sysdatabases"
 }
 
 if($_useTrustedConnection) {

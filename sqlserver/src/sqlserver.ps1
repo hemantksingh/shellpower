@@ -8,8 +8,8 @@ $_server = new-object Microsoft.SqlServer.Management.Smo.Server($dbServer)
 
 $currentDir = Split-Path $script:MyInvocation.MyCommand.Path
 . $currentDir\dbuser.ps1
-. $currentDir\dbrestore.ps1
-. $currentDir\sqlcmd.ps1 -dbServer $dbServer -dbName $dbName
+. $currentDir\sqlcmd.ps1 -dbServer $dbServer
+. $currentDir\db.ps1 -dbServer $dbServer
 
 function Add-DbUser ([Parameter(mandatory=$true)][string] $name,
                     [string] $password,
@@ -121,13 +121,6 @@ function Get-Db(
         Write-Host "No database '$name' found on server '$server'"
         return
     }
-}
-
-function Restore-Db (
-    [Parameter(mandatory = $true)][string] $dbToRestore,
-    [Parameter(mandatory = $true)][string] $backupFile) {
-    Write-Host "Restoring database '$dbToRestore' from backup file '$backupFile'"
-    Invoke-InlineSql -sqlQuery (Get-RestoreSql $dbToRestore $backupFile)
 }
 
 function Add-UserToDb(

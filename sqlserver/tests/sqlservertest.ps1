@@ -36,6 +36,15 @@ function Test-WindowsUserCanBeRemoved {
     Remove-DbUser $winUser
 }
 
+function Test-DbCanBeRestored {
+    $dbBackupFile = (Get-Item -Path ".\sqlserver\tests" -Verbose).FullName + "\foo_dbbackup.bak"
+
+    Backup-Db -dbName $dbName -dbBackupFile $dbBackupFile
+    Restore-Db -dbName $dbName -dbBackupFile $dbBackupFile
+    Set-DbRecoveryModel -dbName $dbName -recoveryModel "SIMPLE"
+    Shrink-LogFile -dbName $dbName
+}
+
 if(![string]::IsNullOrEmpty($winUser)) {
     Test-WindowsUserCanBeAddedWithRoles $winUser
     Test-WindowsUserCanBeRemoved $winUser
@@ -43,3 +52,4 @@ if(![string]::IsNullOrEmpty($winUser)) {
 
 Test-SqlUserCanBeConfiguredWithRoles
 Test-SqlUserCanBeRemoved
+Test-DbCanBeRestored
