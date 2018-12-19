@@ -1,7 +1,21 @@
-$currentDir = Split-Path $script:MyInvocation.MyCommand.Path
-. $currentDir\sqlcmd.ps1
+param (
+  [Parameter(Mandatory = $true)][string] $dbServer
+)
 
 $ErrorActionPreference = "Stop"
+$currentDir = Split-Path $script:MyInvocation.MyCommand.Path
+. $currentDir\sqlcmd.ps1 -dbServer $dbServer
+
+function Backup-Db(
+    [Parameter(mandatory=$true)][string] $dbName,
+    [Parameter(mandatory=$true)][string] $dbBackupFile) {
+    
+    $backupName = "{0}-Full Database Backup" -f $dbName
+    $query = "BACKUP DATABASE [$dbName] TO  DISK = N'$dbBackupFile' WITH NOFORMAT, INIT,  NAME = N'$backupName', SKIP, NOREWIND, NOUNLOAD,  STATS = 10
+    GO"
+    Write-Host "Backing up database '$dbName' to file '$dbBackupFile'"
+    Invoke-InlineSql -sqlQuery $restoreQuery
+}
 
 # Tail log backups captures records on the transaction log that were written since the last transaction log backup. 
 # If you’re overwriting the existing database, then you won’t need a tail-log backup
@@ -20,6 +34,7 @@ function Restore-Db (
     ALTER DATABASE [$dbName] SET MULTI_USER
     GO"
 
+    Write-Host "Restoring database '$dbName' with backup file '$dbBackupFile'"
     Invoke-InlineSql -sqlQuery $restoreQuery
 }
 
@@ -31,7 +46,7 @@ function Set-DbRecoveryModel (
             GO
             ALTER DATABASE [$dbName] SET RECOVERY $recoveryModel WITH NO_WAIT
             GO"
-    
+    Write-Host "Setting '$dbName' recovery model to '$recoveryModel'"
     Invoke-InlineSql -sqlQuery $query    
 }
 
@@ -41,8 +56,10 @@ function Shrink-LogFile(
     [int16] $fileSize=0) {
     
     if([string]::IsNullOrEmpty($logFileName)) {
-        $logFileName = $dbToRestore + "_log"
+        $logFileName = $dbName + "_log"
     }
+
+    Write-Host "Shrinking logfile '$logFileName' to '$fileSize' Mb"
 
     $query = "USE [$dbName]
     GO
