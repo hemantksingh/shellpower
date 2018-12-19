@@ -123,14 +123,6 @@ function Get-Db(
     }
 }
 
-function Restore-Db (
-    [Parameter(mandatory = $true)][string] $dbToRestore,
-    [Parameter(mandatory = $true)][string] $backupFile) {
-    Write-Host "Restoring database '$dbToRestore' from backup file '$backupFile'"
-    Invoke-InlineSql -sqlQuery (Get-RestoreSql $dbToRestore $backupFile)
-    Invoke-InlineSql -sqlQuery (Get-RecoveryModelSql $dbToRestore "SIMPLE")
-}
-
 function Add-UserToDb(
     [Parameter(mandatory = $true)][Microsoft.SqlServer.Management.Smo.Database]$database,
     [Parameter(mandatory = $true)][string] $user) {
