@@ -40,7 +40,9 @@ build_script:
   - cmd: make build APPLICATION=sqlserver
 
 after_build:
-  - ps: iisconfig\tests\iisconfigtest.ps1
+  # using appveyor native ps for running tests, 32-bit make possibly runs 32-bit ps 
+  # which fails to register cmdlets e.g. AppPool-Exists correctly
+  - ps: iisconfig\tests\iisconfigtest.ps1 
   - cmd: make package APPLICATION=iisconfig BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
   - cmd: make test APPLICATION=sqlserver DBSERVER="(local)\SQL2017" TRUSTED_CONNECTION=false
   - cmd: make package APPLICATION=sqlserver BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
