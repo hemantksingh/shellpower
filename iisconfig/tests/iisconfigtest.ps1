@@ -1,10 +1,6 @@
-param (
-  [Parameter(mandatory=$true)][string] $source
-)
-
 $ErrorActionPreference = "Stop"
 
-$source = (Get-Item -Path $source -Verbose).FullName
+$source = (Get-Item -Path ".\iisconfig\src\" -Verbose).FullName
 
 Write-Host "Importing from source $source"
 . $source/iisconfig.ps1

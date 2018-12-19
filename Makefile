@@ -35,7 +35,7 @@ TRUSTED_CONNECTION?=true
 
 test:
 ifeq ($(APPLICATION), iisconfig)
-	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(APPLICATION)/src
+	powershell $(APPLICATION)/tests/iisconfigtest.ps1
 else ifeq ($(APPLICATION), sqlserver)
 	powershell "$(APPLICATION)/tests/sqlservertest.ps1 -dbServer \"$(DBSERVER)\" -winUser \"$(WIN_USER)\""
 	powershell "$(APPLICATION)/tests/sqlcmdtest.ps1 -dbServer \"$(DBSERVER)\" -useTrustedConnection $(TRUSTED_CONNECTION)"
