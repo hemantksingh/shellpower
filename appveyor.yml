@@ -40,9 +40,9 @@ build_script:
   - cmd: make build APPLICATION=sqlserver
 
 after_build:
-  - ps: iisconfig\tests\iisconfigtest.ps1 -source iisconfig\src
+  - cmd: make test APPLICATION=iisconfig 
   - cmd: make package APPLICATION=iisconfig BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
-  - cmd: make test-sqlserver APPLICATION=sqlserver DBSERVER="(local)\SQL2017" USE_TRUSTED_CONNECTION=false
+  - cmd: make test APPLICATION=sqlserver DBSERVER="(local)\SQL2017" TRUSTED_CONNECTION=false
   - cmd: make package APPLICATION=sqlserver BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
   
 artifacts:

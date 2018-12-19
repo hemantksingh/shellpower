@@ -29,16 +29,19 @@ install:
 	-outputdirectory $(PACKAGES_DIR) \
 	-source $(NUGET_SOURCE)
 
-test:
-	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(APPLICATION)/src
-
-DBSERVER?=localhost
-USE_TRUSTED_CONNECTION?=true
 #WIN_USER?=example\win-user
-test-sqlserver:
+DBSERVER?=localhost
+TRUSTED_CONNECTION?=true
+
+test:
+ifeq ($(APPLICATION), iisconfig)
+	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(APPLICATION)/src
+else ifeq ($(APPLICATION), sqlserver)
 	powershell "$(APPLICATION)/tests/sqlservertest.ps1 -dbServer \"$(DBSERVER)\" -winUser \"$(WIN_USER)\""
-	powershell "$(APPLICATION)/tests/sqlcmdtest.ps1 -dbServer \"$(DBSERVER)\" -useTrustedConnection $(USE_TRUSTED_CONNECTION)"
+	powershell "$(APPLICATION)/tests/sqlcmdtest.ps1 -dbServer \"$(DBSERVER)\" -useTrustedConnection $(TRUSTED_CONNECTION)"
+else
+	@echo Unknown app $(APPLICATION)
+endif
 
 test-package:install
 	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(PACKAGES_DIR)/$(PACKAGE)/bin
-
