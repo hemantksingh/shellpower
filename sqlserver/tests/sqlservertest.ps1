@@ -11,20 +11,20 @@ $source = (Get-Item -Path ".\sqlserver\src\" -Verbose).FullName
 Write-Host "Importing from source $source"
 . $source\sqlserver.ps1 -dbServer $dbServer -dbName $dbName
 
-function Test-SqlUserCanBeConfiguredWithRoles {
+function Test-SqlUserCanBeAddedWithDefaultRoles {
     
     Add-DbUser -name "bar" -password "test-passw0rd!" `
         -serverRoles @("dbcreator", "bulkadmin", "sysadmin") `
         -dbRoles @("db_datareader", "db_datawriter", "db_ddladmin", "db_owner")
 }
 
-function Test-SqlUserCanBeConfiguredWithNonDefaultRoles {
+function Test-SqlUserCanBeAddedWithAdditionalRoles {
     
     Add-DbUser -name "bar" -password "test-passw0rd!" `
         -serverRoles @("dbcreator", "bulkadmin", "sysadmin") `
-        -dbRoles @("db_datareader", "db_datawriter", "db_ddladmin", "db_owner", "db_dataexecutor")
+        -dbRoles @("db_datareader", "db_datawriter", "db_ddladmin", "db_owner",
+            "db_dataexecutor")
 }
-
 
 function Test-SqlUserCanBeRemoved {
     Add-DbUser "lol" "test-passw0rd!"
@@ -59,7 +59,7 @@ if(![string]::IsNullOrEmpty($winUser)) {
     Test-WindowsUserCanBeRemoved $winUser
 }
 
-Test-SqlUserCanBeConfiguredWithNonDefaultRoles
-Test-SqlUserCanBeConfiguredWithRoles
+Test-SqlUserCanBeAddedWithDefaultRoles
+Test-SqlUserCanBeAddedWithAdditionalRoles
 Test-SqlUserCanBeRemoved
 Test-DbCanBeRestored

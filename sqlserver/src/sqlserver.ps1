@@ -166,7 +166,7 @@ function Add-PermissionsToDbRole(
     $permissions | ForEach-Object {
         $permissionProp = $dbPermissions.psobject.properties[$_]
         if($permissionProp) {
-            Write-Host "Granting permission '$_' to role '$roleName' on '$database'"
+            Write-Host "Granting permission '$_' to role '$roleName' on database '$database'"
             $permissionProp.Value = $true
         } else {
             Write-Host "Permission '$_' not found"
