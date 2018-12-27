@@ -150,10 +150,31 @@ function Add-UserToDbRole(
         Write-Warning "Role '$roleName' does not exist on database '$database', creating it"
         $role = New-Object('Microsoft.SqlServer.Management.smo.DatabaseRole') $database, $roleName
         $role.Create();
+        Add-PermissionsToDbRole $database $roleName @('Execute')
     }
     $role = $database.Roles[$roleName]
     $role.AddMember($user)
     $role.Alter()
+}
+
+function Add-PermissionsToDbRole(  
+    [Parameter(mandatory = $true)][Microsoft.SqlServer.Management.Smo.Database]$database,
+    [Parameter(mandatory = $true)][string] $roleName,
+    [Parameter(mandatory = $true)][System.Array] $permissions) {
+
+    $dbPermissions = New-Object Microsoft.SqlServer.Management.Smo.DatabasePermissionSet
+    $permissions | ForEach-Object {
+        $permissionProp = $dbPermissions.psobject.properties[$_]
+        if($permissionProp) {
+            Write-Host "Granting permission '$_' to role '$roleName' on '$database'"
+            $permissionProp.Value = $true
+        } else {
+            Write-Host "Permission '$_' not found"
+        }
+    }
+    
+    $database.Grant($dbPermissions, $roleName);
+    $database.Alter();
 }
 
 function Add-UserToDbRoles(
