@@ -18,6 +18,14 @@ function Test-SqlUserCanBeConfiguredWithRoles {
         -dbRoles @("db_datareader", "db_datawriter", "db_ddladmin", "db_owner")
 }
 
+function Test-SqlUserCanBeConfiguredWithNonDefaultRoles {
+    
+    Add-DbUser -name "bar" -password "test-passw0rd!" `
+        -serverRoles @("dbcreator", "bulkadmin", "sysadmin") `
+        -dbRoles @("db_datareader", "db_datawriter", "db_ddladmin", "db_owner", "db_dataexecutor")
+}
+
+
 function Test-SqlUserCanBeRemoved {
     Add-DbUser "lol" "test-passw0rd!"
     Remove-DbUser "lol"
@@ -50,6 +58,7 @@ if(![string]::IsNullOrEmpty($winUser)) {
     Test-WindowsUserCanBeRemoved $winUser
 }
 
-Test-SqlUserCanBeConfiguredWithRoles
-Test-SqlUserCanBeRemoved
-Test-DbCanBeRestored
+Test-SqlUserCanBeConfiguredWithNonDefaultRoles
+# Test-SqlUserCanBeConfiguredWithRoles
+# Test-SqlUserCanBeRemoved
+# Test-DbCanBeRestored

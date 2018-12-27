@@ -145,6 +145,12 @@ function Add-UserToDbRole(
     [Parameter(mandatory = $true)][string] $user,
     [Parameter(mandatory = $true)][string] $roleName) {
     Write-Host "Adding user '$user' to role '$roleName' on database '$database'"
+    
+    if(!$database.Roles.Contains($roleName)) {
+        Write-Warning "Role '$roleName' does not exist on database '$database', creating it"
+        $role = New-Object('Microsoft.SqlServer.Management.smo.DatabaseRole') $database, $roleName
+        $role.Create();
+    }
     $role = $database.Roles[$roleName]
     $role.AddMember($user)
     $role.Alter()
