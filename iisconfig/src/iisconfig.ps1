@@ -27,10 +27,10 @@ function Delete-Website([Parameter(mandatory=$true)]
   $exists = (Get-Website -Name $name).Name -eq $name
 
   if($exists) {
-    Write-Host "Website '$name' already exists, deleting it"
+    Write-Warning "Website '$name' already exists, deleting it"
     Remove-WebSite -Name $name
   } else {
-    Write-Warning "Website '$name' not found, nothing deleted"
+    Write-Host "Website '$name' not found, nothing deleted"
   }
 }
 
