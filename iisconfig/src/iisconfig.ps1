@@ -27,10 +27,10 @@ function Delete-Website([Parameter(mandatory=$true)]
   $exists = (Get-Website -Name $name).Name -eq $name
 
   if($exists) {
-    Write-Host "App '$name' exists, deleting it"
+    Write-Host "Website '$name' already exists, deleting it"
     Remove-WebSite -Name $name
   } else {
-    Write-Warning "'$name' not found, nothing deleted"
+    Write-Warning "Website '$name' not found, nothing deleted"
   }
 }
 
@@ -95,8 +95,12 @@ function Create-WebApplication (
         [Parameter(mandatory=$true)]
         [string] $physicalPath) {
       
-      Write-Host "Creating web application '$name'"
+      Write-Host "Creating web application '$name' for web site '$siteName' with app pool '$appPool' and path '$physicalPath'"
 
+      if((Get-Website -Name $siteName).Name -ne $siteName) {
+        $message = "Failed to create web application '$name', web site '$siteName' was not found"
+        throw [System.InvalidOperationException] $message
+      }
       Ensure-PathExists $physicalPath
 
       New-WebApplication `

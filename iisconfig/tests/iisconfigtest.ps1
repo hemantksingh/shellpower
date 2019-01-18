@@ -1,9 +1,11 @@
 $ErrorActionPreference = "Stop"
 
 $source = (Get-Item -Path ".\iisconfig\src\" -Verbose).FullName
+$currentDir = Split-Path $script:MyInvocation.MyCommand.Path
 
 Write-Host "Importing from source $source"
-. $source/iisconfig.ps1
+. $source\iisconfig.ps1
+. $currentDir\testutil.ps1
 
 function Setup-Website(
     [Parameter(mandatory=$true)][string] $username,
@@ -22,9 +24,23 @@ function Setup-Website(
     Create-WebApplication -name $shellpowerApi -siteName $shellpowerSite -appPool $appPoolName -physicalPath "$root\$shellpowerApi"
 }
 
-function Test-WebsiteSetupCanBeRepeated {
+function Test-WebApplicationCanBeCreatedForValidWebSite {
     Setup-Website -username "sample-user" -password "apassword"
     Setup-Website -username "sample-user" -password "apassword"    
 }
 
-Test-WebsiteSetupCanBeRepeated
+function Test-WebApplicationCannotBeCreatedForInvalidWebSite  {
+    $root = "C:\inetpub"
+    $shellpowerApi = "api2"
+    try {
+        Create-WebApplication -name $shellpowerApi `
+            -siteName "invalidwebsitte" `
+            -appPool $shellpowerApi `
+            -physicalPath "$root\$shellpowerApi"
+    } catch {
+        AssertEqual "Failed to create web application 'api2', web site 'invalidwebsitte' was not found" $_.Exception.Message
+    }
+}
+
+Test-WebApplicationCanBeCreatedForValidWebSite
+Test-WebApplicationCannotBeCreatedForInvalidWebSite
