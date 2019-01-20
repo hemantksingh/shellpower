@@ -9,37 +9,23 @@ Write-Host "Importing from source $source"
 
 $_root = "$env:TEMP\shellpower" # This is ususally 'C:\inetpub'
 
-function Setup-Website(
-    [Parameter(mandatory=$true)][string] $siteName,
-    [Parameter(mandatory=$true)][string] $webappName,
-    [Parameter(mandatory=$true)][string] $username,
-    [Parameter(mandatory=$true)][string] $password) {
-   
-    $appPoolName = $siteName
-    $path = "$_root\$siteName"; Ensure-PathExists $path
-    
-    Create-AppPool -name $appPoolName
-    Create-Website -name $siteName -port 80 -appPool $appPoolName -physicalPath $path
-  
-    $appPoolName = "{0}_{1}" -f $siteName.Replace(' ', ''), $webappName
-    $path = "$_root\$webappName"; Ensure-PathExists $path
-    Create-AppPoolWithIdentity -name $appPoolName -username $username -password $password
-    Create-WebApplication `
-        -name $webappName `
-        -siteName $siteName `
-        -appPool $appPoolName `
-        -physicalPath $path
-}
-
 function Test-WebApplicationCanBeCreatedForValidWebSite {
-    Setup-Website -siteName "shellpower1" -webappName "api" -username "sample-user" -password "apassword"
-    Setup-Website -siteName "shellpower1" -webappName "api" -username "sample-user" -password "apassword"
+    $siteName = "shellpower1"
+    $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
+    $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
+
+    Add-WebApplicationToWebSite -siteName $siteName `
+        -sitePath $sitePath `
+        -webappName "api" `
+        -webappPath $webappPath `
+        -webappUsername "sample-user" `
+        -webappPassword "apassword"
 }
 
 function Test-WebApplicationCannotBeCreatedForInvalidWebSite  {
     $webappName = "api2"
     $siteName = "invalidsite"
-    $path = "$_root\$webappName"; Ensure-PathExists $path
+    $path = "$_root\$siteName\$webappName"; Ensure-PathExists $path
     try {
         Create-WebApplication `
             -name $webappName `
@@ -88,6 +74,7 @@ function Remove-Setup {
     Remove-Item -Path $_root -Recurse -Force
 }
 
+#Remove-Setup
 Test-WebApplicationCanBeCreatedForValidWebSite
 Test-WebApplicationCannotBeCreatedForInvalidWebSite
 Test-WebApplicationCanBeCreatedForValidVirtualDirectory

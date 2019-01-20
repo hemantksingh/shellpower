@@ -63,6 +63,7 @@ function Create-AppPoolWithIdentity(
     [Parameter(mandatory=$true)][string] $password,
     [string] $runtimeVersion) {
 
+    Write-Host "Creating new AppPool '$name' with identity"
     $appPool = Create-AppPool $name $runtimeVersion
     $appPool.processModel.userName = $username
     $appPool.processModel.password = $password
@@ -111,4 +112,35 @@ function Create-WebVirtualDirectory (
       -Name $name `
       -PhysicalPath $physicalPath `
       -Force
+}
+
+function Add-WebApplicationToWebSite( 
+    [Parameter(mandatory=$true)][string] $siteName,
+    [string] $sitePath,
+    [Parameter(mandatory=$true)][string] $webappName,
+    [Parameter(mandatory=$true)][string] $webappPath,
+    [string] $webappUsername,
+    [string] $webappPassword) {
+
+  $appPoolName = $siteName.Replace(' ', '')
+  
+  Create-AppPool -name $appPoolName
+  Create-Website -name $siteName -port 80 -appPool $appPoolName -physicalPath $sitePath
+
+  $appPoolName = "{0}_{1}" -f $siteName.Replace(' ', ''), $webappName.Replace(' ', '')
+
+  if(![string]::IsNullOrEmpty($webappUsername) -and ![string]::IsNullOrEmpty($webappPassword)) {
+    Create-AppPoolWithIdentity `
+      -name $appPoolName `
+      -username $webappUsername `
+      -password $webappPassword
+  } else {
+    Create-AppPool -name $appPoolName
+  }
+
+  Create-WebApplication `
+      -name $webappName `
+      -siteName $siteName `
+      -appPool $appPoolName `
+      -physicalPath $webappPath
 }
