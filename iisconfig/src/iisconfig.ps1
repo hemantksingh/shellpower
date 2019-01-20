@@ -147,3 +147,50 @@ function Add-WebApplicationToWebSite(
       -appPool $appPoolName `
       -physicalPath $webappPath
 }
+
+function Add-WebApplicationToVirtualDirectory(
+    [Parameter(mandatory=$true)][string] $siteName,
+    [string] $sitePath,
+    [Parameter(mandatory=$true)][string] $virDirName,
+    [string] $virDirPath,
+    [Parameter(mandatory=$true)][string] $webappName,
+    [Parameter(mandatory=$true)][string] $webappPath,
+    [string] $webappUsername,
+    [string] $webappPassword) {
+  
+  if(![string]::IsNullOrEmpty($sitePath)) {
+    $appPoolName = $siteName.Replace(' ', '')
+    Create-AppPool -name $appPoolName
+    Create-Website -name $siteName -port 80 -appPool $appPoolName -physicalPath $sitePath
+  } else {
+    Write-Host "Skipped creating web site '$siteName'"
+  }
+
+  if(![string]::IsNullOrEmpty($virDirPath)) {
+    Create-WebVirtualDirectory -name $virDirName `
+      -siteName $siteName `
+      -physicalPath $virDirPath
+  } else {
+    Write-Host "Skipped creating virtual directory '$virDirName'"
+  }
+
+  $appPoolName = "{0}_{1}_{2}" -f `
+    $siteName.Replace(' ', ''), 
+    $virDirName.Replace(' ', ''), 
+    $webappName.Replace(' ', '')
+  
+  if(![string]::IsNullOrEmpty($webappUsername) -and ![string]::IsNullOrEmpty($webappPassword)) {
+    Create-AppPoolWithIdentity `
+      -name $appPoolName `
+      -username $webappUsername `
+      -password $webappPassword
+  } else {
+    Create-AppPool -name $appPoolName
+  }
+
+  Create-WebApplication `
+    -name $webappName `
+    -siteName "$siteName\$virDirName" `
+    -appPool $appPoolName `
+    -physicalPath $webappPath
+}
