@@ -1,17 +1,12 @@
 Import-Module WebAdministration
 
 function Create-Website (
-        [Parameter(mandatory=$true)]
-        [string] $name,
-        [Parameter(mandatory=$true)]
-        [int] $port,
-        [Parameter(mandatory=$true)]
-        [string] $appPool,
-        [Parameter(mandatory=$true)]
-        [string] $physicalPath) {
+    [Parameter(mandatory=$true)][string] $name,
+    [Parameter(mandatory=$true)][int] $port,
+    [Parameter(mandatory=$true)][string] $appPool,
+    [Parameter(mandatory=$true)][string] $physicalPath) {
 
     Write-Host "Creating website '$name'"
-    Ensure-PathExists $physicalPath
     Delete-Website $name
 
     New-Website `
@@ -21,8 +16,9 @@ function Create-Website (
       -ApplicationPool $appPool `
 }
 
-function Delete-Website([Parameter(mandatory=$true)]
-                    [string] $name) {
+function Delete-Website(
+    [Parameter(mandatory=$true)]
+    [string] $name) {
 
   $exists = (Get-Website -Name $name).Name -eq $name
 
@@ -39,74 +35,71 @@ function AppPool-Exists([Parameter(mandatory=$true)]
     return (Test-Path IIS:\AppPools\$name)
 }
 
-function Create-AppPool([Parameter(mandatory=$true)][string] $name,
-                        [string] $runtimeVersion) {
+function Create-AppPool(
+    [Parameter(mandatory=$true)][string] $name,
+    [string] $runtimeVersion) {
 
-  Write-Host "Creating new AppPool '$name'"
-  if((AppPool-Exists $name)) {
-      Write-Warning "AppPool '$name' already exists, removing it"
-      Remove-WebAppPool $name
-  }
-  
-  $appPool = New-WebAppPool "$name" -Force
-  $appPool.processModel.identityType = "ApplicationPoolIdentity"
-  $appPool | Set-Item
-  
-  if($runtimeVersion -eq "No Managed Code") {
-    Write-Host "Updating runtime for AppPool '$name'"
-    # Default runtime assigned is v4.0
-    $appPool | Set-ItemProperty -Name "managedRuntimeVersion" -Value ""
-  }
-  return $appPool
+    Write-Host "Creating new AppPool '$name'"
+    if((AppPool-Exists $name)) {
+        Write-Warning "AppPool '$name' already exists, removing it"
+        Remove-WebAppPool $name
+    }
+
+    $appPool = New-WebAppPool "$name" -Force
+    $appPool.processModel.identityType = "ApplicationPoolIdentity"
+    $appPool | Set-Item
+
+    if($runtimeVersion -eq "No Managed Code") {
+      Write-Host "Updating runtime for AppPool '$name'"
+      # Default runtime assigned is v4.0
+      $appPool | Set-ItemProperty -Name "managedRuntimeVersion" -Value ""
+    }
+    return $appPool
 }
 
-function Create-AppPoolWithIdentity([Parameter(mandatory=$true)]
-                                    [string] $name,
-                                    [Parameter(mandatory=$true)]
-                                    [string] $username,
-                                    [Parameter(mandatory=$true)]
-                                    [string] $password,
-                                    [string] $runtimeVersion) {
+function Create-AppPoolWithIdentity(
+    [Parameter(mandatory=$true)][string] $name,
+    [Parameter(mandatory=$true)][string] $username,
+    [Parameter(mandatory=$true)][string] $password,
+    [string] $runtimeVersion) {
 
-      $appPool = Create-AppPool $name $runtimeVersion
-      if( -not $appPool) {
-        return
-      }
-      $appPool.processModel.userName = $username
-      $appPool.processModel.password = $password
-      $appPool.processModel.identityType = "SpecificUser"
-      $appPool | Set-Item
-}
-
-function Ensure-PathExists([Parameter(mandatory=$true)][string] $path) {  
-  if(-Not (Test-Path $path)) {
-    Write-Warning "'$path' does not exist. Creating it"
-    mkdir -Force $path
-  }
+    $appPool = Create-AppPool $name $runtimeVersion
+    $appPool.processModel.userName = $username
+    $appPool.processModel.password = $password
+    $appPool.processModel.identityType = "SpecificUser"
+    $appPool | Set-Item
 }
 
 function Create-WebApplication (
-        [Parameter(mandatory=$true)]
-        [string] $name,
-        [Parameter(mandatory=$true)]
-        [string] $siteName,
-        [Parameter(mandatory=$true)]
-        [string] $appPool,
-        [Parameter(mandatory=$true)]
-        [string] $physicalPath) {
+    [Parameter(mandatory=$true)][string] $name,
+    [Parameter(mandatory=$true)][string] $siteName,
+    [Parameter(mandatory=$true)][string] $appPool,
+    [Parameter(mandatory=$true)][string] $physicalPath) {
       
-      Write-Host "Creating web application '$name' for web site '$siteName' with app pool '$appPool' and path '$physicalPath'"
+    Write-Host "Creating web application '$name' for web site '$siteName' with app pool '$appPool' and path '$physicalPath'"
 
-      if((Get-Website -Name $siteName).Name -ne $siteName) {
-        $message = "Failed to create web application '$name', web site '$siteName' was not found"
-        throw [System.InvalidOperationException] $message
-      }
-      Ensure-PathExists $physicalPath
+    if((Get-Website -Name $siteName).Name -ne $siteName) {
+      $message = "Failed to create web application '$name', web site '$siteName' was not found"
+      throw [System.InvalidOperationException] $message
+    }
 
-      New-WebApplication `
-        -Site $siteName `
-        -Name $name `
-        -PhysicalPath $physicalPath `
-        -ApplicationPool $appPool `
-        -Force
+    New-WebApplication `
+      -Site $siteName `
+      -Name $name `
+      -PhysicalPath $physicalPath `
+      -ApplicationPool $appPool `
+      -Force
+}
+
+function Create-WebVirtualDirectory (
+    [Parameter(mandatory=$true)][string] $name,
+    [Parameter(mandatory=$true)][string] $siteName,
+    [Parameter(mandatory=$true)][string] $physicalPath) {
+
+    Write-Host "Creating web vir dir '$name' for web site '$siteName' with path '$physicalPath'"
+    New-WebVirtualDirectory `
+      -Site $siteName `
+      -Name $name `
+      -PhysicalPath $physicalPath `
+      -Force
 }

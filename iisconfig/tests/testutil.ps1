@@ -8,3 +8,12 @@ function AssertEqual ($expected, $actual, $message) {
         Fail "$message Expected '$expected' Actual '$actual'"
     }
 }
+
+function Ensure-PathExists([Parameter(mandatory=$true)][string] $path) {  
+    if(-Not (Test-Path $path)) {
+      Write-Warning "'$path' does not exist. Creating it"
+      mkdir -Force $path
+    }
+
+    return $path
+  }
