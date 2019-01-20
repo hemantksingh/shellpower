@@ -9,11 +9,11 @@ function AssertEqual ($expected, $actual, $message) {
     }
 }
 
-function Ensure-PathExists([Parameter(mandatory=$true)][string] $path) {  
+function Ensure-PathExists([Parameter(mandatory=$true)][string] $path) {
     if(-Not (Test-Path $path)) {
       Write-Warning "'$path' does not exist. Creating it"
       mkdir -Force $path
+    } else {
+        Write-Warning "'$path' already exists"
     }
-
-    return $path
   }

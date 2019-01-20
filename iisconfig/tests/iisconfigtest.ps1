@@ -7,7 +7,7 @@ Write-Host "Importing from source $source"
 . $source\iisconfig.ps1
 . $currentDir\testutil.ps1
 
-$_root = "C:\inetpub"
+$_root = "$env:TEMP\shellpower" # This is ususally 'C:\inetpub'
 
 function Setup-Website(
     [Parameter(mandatory=$true)][string] $siteName,
@@ -16,12 +16,13 @@ function Setup-Website(
     [Parameter(mandatory=$true)][string] $password) {
    
     $appPoolName = $siteName
-    $path = Ensure-PathExists "$_root\$siteName"
+    $path = "$_root\$siteName"; Ensure-PathExists $path
+    
     Create-AppPool -name $appPoolName
     Create-Website -name $siteName -port 80 -appPool $appPoolName -physicalPath $path
   
     $appPoolName = "{0}_{1}" -f $siteName, $webappName
-    $path = Ensure-PathExists "$_root\$webappName"
+    $path = "$_root\$webappName"; Ensure-PathExists $path
     Create-AppPoolWithIdentity -name $appPoolName -username $username -password $password
     Create-WebApplication `
         -name $webappName `
@@ -38,7 +39,7 @@ function Test-WebApplicationCanBeCreatedForValidWebSite {
 function Test-WebApplicationCannotBeCreatedForInvalidWebSite  {
     $webappName = "api2"
     $siteName = "invalidsite"
-    $path = Ensure-PathExists "$_root\$webappName"
+    $path = "$_root\$webappName"; Ensure-PathExists $path
     try {
         Create-WebApplication `
             -name $webappName `
@@ -53,7 +54,7 @@ function Test-WebApplicationCannotBeCreatedForInvalidWebSite  {
 function Test-VirtualDirectoryCanBeCreated {
     $virDir = "vir1"
     $siteName = "shellpower"
-    $path = Ensure-PathExists "$_root\$virDir"
+    $path = "$_root\$virDir"; Ensure-PathExists $path
 
     Create-WebVirtualDirectory `
             -name $virDir `
