@@ -70,6 +70,13 @@ function Create-AppPoolWithIdentity(
     $appPool | Set-Item
 }
 
+function Ensure-SiteExists([Parameter(mandatory=$true)][string] $siteName) {
+  
+  if((Get-Website -Name $siteName).Name -ne $siteName) {
+    $message = "Failed to create web application '$name', web site '$siteName' was not found"
+    throw [System.InvalidOperationException] $message
+  }
+}
 function Create-WebApplication (
     [Parameter(mandatory=$true)][string] $name,
     [Parameter(mandatory=$true)][string] $siteName,
@@ -78,9 +85,11 @@ function Create-WebApplication (
       
     Write-Host "Creating web application '$name' for web site '$siteName' with app pool '$appPool' and path '$physicalPath'"
 
-    if((Get-Website -Name $siteName).Name -ne $siteName) {
-      $message = "Failed to create web application '$name', web site '$siteName' was not found"
-      throw [System.InvalidOperationException] $message
+    $siteParts = $siteName.Split("\")
+    if($siteParts.Length -gt 0) {
+      Ensure-SiteExists $siteParts[0]
+    } else {
+      Ensure-SiteExists $siteName
     }
 
     New-WebApplication `
