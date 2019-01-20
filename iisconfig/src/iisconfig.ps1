@@ -6,7 +6,7 @@ function Create-Website (
     [Parameter(mandatory=$true)][string] $appPool,
     [Parameter(mandatory=$true)][string] $physicalPath) {
 
-    Write-Host "Creating website '$name'"
+    Write-Host "Creating website '$name' with appPool '$appPool' on port '$port' and path '$physicalPath'"
     Delete-Website $name
 
     New-Website `
@@ -122,10 +122,13 @@ function Add-WebApplicationToWebSite(
     [string] $webappUsername,
     [string] $webappPassword) {
 
-  $appPoolName = $siteName.Replace(' ', '')
-  
-  Create-AppPool -name $appPoolName
-  Create-Website -name $siteName -port 80 -appPool $appPoolName -physicalPath $sitePath
+  if(![string]::IsNullOrEmpty($sitePath)) {
+    $appPoolName = $siteName.Replace(' ', '')
+    Create-AppPool -name $appPoolName
+    Create-Website -name $siteName -port 80 -appPool $appPoolName -physicalPath $sitePath
+  } else {
+    Write-Host "Skipped creating web site '$siteName'"
+  }
 
   $appPoolName = "{0}_{1}" -f $siteName.Replace(' ', ''), $webappName.Replace(' ', '')
 

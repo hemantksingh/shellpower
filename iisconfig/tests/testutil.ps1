@@ -3,9 +3,15 @@ function Fail ($message) {
     throw [System.Exception] $message
 }
   
-function AssertEqual ($expected, $actual, $message) {
+function Assert-Equal ($expected, $actual, $message) {
     if($expected -ne $actual) {
         Fail "$message Expected '$expected' Actual '$actual'"
+    }
+}
+
+function Assert-NotEqual ($expected, $actual, $message) {
+    if($expected -eq $actual) {
+        Fail "$message Expected '$expected' to be not equal to '$actual'"
     }
 }
 

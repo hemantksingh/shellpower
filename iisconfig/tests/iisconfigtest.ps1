@@ -17,23 +17,37 @@ function Test-WebApplicationCanBeCreatedForValidWebSite {
     Add-WebApplicationToWebSite -siteName $siteName `
         -sitePath $sitePath `
         -webappName "api" `
+        -webappPath $webappPath
+
+    # Assert-Equal "api" (Get-WebApplication -Name "api" -Site "shellpower1").Name
+}
+
+function Test-WebApplicationWithIdentityCanBeCreatedForValidWebSite {
+    $siteName = "shellpower1"
+    $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
+    $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
+
+    Add-WebApplicationToWebSite -siteName $siteName `
+        -sitePath $sitePath `
+        -webappName "api" `
         -webappPath $webappPath `
         -webappUsername "sample-user" `
         -webappPassword "apassword"
+
+    Assert-Equal $siteName (Get-Website -Name $siteName).Name
 }
 
-function Test-WebApplicationCannotBeCreatedForInvalidWebSite  {
-    $webappName = "api2"
+function Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteIsNotSpecified  {
+
     $siteName = "invalidsite"
-    $path = "$_root\$siteName\$webappName"; Ensure-PathExists $path
+    $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
+    $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
     try {
-        Create-WebApplication `
-            -name $webappName `
-            -siteName $siteName `
-            -appPool $webappName `
-            -physicalPath $path
+        Add-WebApplicationToWebSite -siteName $siteName `
+            -webappName "api2" `
+            -webappPath $webappPath
     } catch {
-        AssertEqual "Failed to create web application 'api2', web site '$siteName' was not found" $_.Exception.Message
+        Assert-Equal "Failed to create web application 'api2', web site '$siteName' was not found" $_.Exception.Message
     }
 }
 
@@ -74,7 +88,7 @@ function Remove-Setup {
     Remove-Item -Path $_root -Recurse -Force
 }
 
-#Remove-Setup
+# Remove-Setup
 Test-WebApplicationCanBeCreatedForValidWebSite
-Test-WebApplicationCannotBeCreatedForInvalidWebSite
+Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteIsNotSpecified
 Test-WebApplicationCanBeCreatedForValidVirtualDirectory
