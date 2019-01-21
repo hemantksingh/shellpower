@@ -4,10 +4,13 @@ function Create-Website (
     [Parameter(mandatory=$true)][string] $name,
     [Parameter(mandatory=$true)][int] $port,
     [Parameter(mandatory=$true)][string] $appPool,
-    [Parameter(mandatory=$true)][string] $physicalPath) {
+    [Parameter(mandatory=$true)][string] $physicalPath,
+    [string] $username,
+    [string] $password) {
 
     Write-Host "Creating website '$name' with appPool '$appPool' on port '$port' and path '$physicalPath'"
     Delete-Website $name
+    Create-AppPool -name $appPoolName -username $username -password $password
 
     New-Website `
       -Name $name `
@@ -128,9 +131,8 @@ function Add-WebApplicationToWebSite(
     [string] $webappPassword,
     [bool] $isNetCore = $true) {
 
-  if(![string]::IsNullOrEmpty($sitePath)) {
-    $appPoolName = $siteName.Replace(' ', '')
-    Create-AppPool -name $appPoolName
+  $appPoolName = $siteName.Replace(' ', '')
+  if(![string]::IsNullOrEmpty($sitePath)) {  
     Create-Website -name $siteName -port 80 -appPool $appPoolName -physicalPath $sitePath
   } else {
     Write-Host "Skipped creating web site '$siteName'"
@@ -158,9 +160,8 @@ function Add-WebApplicationToVirtualDirectory(
     [string] $webappPassword,
     [bool] $isNetCore=$true) {
   
-  if(![string]::IsNullOrEmpty($sitePath)) {
-    $appPoolName = $siteName.Replace(' ', '')
-    Create-AppPool -name $appPoolName
+  $appPoolName = $siteName.Replace(' ', '')
+  if(![string]::IsNullOrEmpty($sitePath)) {  
     Create-Website -name $siteName -port 80 -appPool $appPoolName -physicalPath $sitePath
   } else {
     Write-Host "Skipped creating web site '$siteName'"
