@@ -11,15 +11,24 @@ $_root = "$env:TEMP\shellpower" # This is ususally 'C:\inetpub'
 
 function Test-WebApplicationCanBeCreatedForValidWebSite {
     $siteName = "shellpower1"
+    $webapp ="api"
     $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
     $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
 
     Add-WebApplicationToWebSite -siteName $siteName `
         -sitePath $sitePath `
-        -webappName "api" `
+        -webappName $webapp `
         -webappPath $webappPath
 
-    # Assert-Equal "api" (Get-WebApplication -Name "api" -Site "shellpower1")
+    $actual = (Get-WebApplication -Name $webapp -Site $siteName) | 
+        Select-Object @{Name='Name'; Expression={$_.Path.trim('/')}}
+
+    $actual1 = (Get-WebApplication -Name $webapp -Site $siteName) | 
+        Select-Object @{Name='AppPool'; Expression={$_.applicationPool}}
+
+    $expected =  "{0}_{1}" -f $siteName, $webapp
+    Assert-Equal $webapp $actual.Name
+    Assert-Equal $expected $actual1.AppPool
 }
 
 function Test-WebApplicationWithIdentityCanBeCreatedForValidWebSite {
