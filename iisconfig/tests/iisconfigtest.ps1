@@ -7,40 +7,95 @@ Write-Host "Importing from source $source"
 . $source\iisconfig.ps1
 . $currentDir\testutil.ps1
 
-function Setup-Website(
-    [Parameter(mandatory=$true)][string] $username,
-    [Parameter(mandatory=$true)][string] $password) {
-
-    $root = "C:\inetpub"
-    $shellpowerSite = "shellpower"
-    $shellpowerApi = "api"
-    
-    $appPoolName = $shellpowerSite
-    Create-AppPool -name $appPoolName
-    Create-Website -name $shellpowerSite -port 80 -appPool $appPoolName -physicalPath "$root\$shellpowerSite"
-  
-    $appPoolName = "{0}_{1}" -f $shellpowerSite, $shellpowerApi
-    Create-AppPoolWithIdentity -name $appPoolName -username $username -password $password
-    Create-WebApplication -name $shellpowerApi -siteName $shellpowerSite -appPool $appPoolName -physicalPath "$root\$shellpowerApi"
-}
+$_root = "$env:TEMP\shellpower" # This is ususally 'C:\inetpub'
 
 function Test-WebApplicationCanBeCreatedForValidWebSite {
-    Setup-Website -username "sample-user" -password "apassword"
-    Setup-Website -username "sample-user" -password "apassword"    
+    $siteName = "shellpower1"
+    $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
+    $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
+
+    Add-WebApplicationToWebSite -siteName $siteName `
+        -sitePath $sitePath `
+        -webappName "api" `
+        -webappPath $webappPath
+
+    # Assert-Equal "api" (Get-WebApplication -Name "api" -Site "shellpower1")
 }
 
-function Test-WebApplicationCannotBeCreatedForInvalidWebSite  {
-    $root = "C:\inetpub"
-    $shellpowerApi = "api2"
+function Test-WebApplicationWithIdentityCanBeCreatedForValidWebSite {
+    $siteName = "shellpower1"
+    $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
+    $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
+
+    Add-WebApplicationToWebSite -siteName $siteName `
+        -sitePath $sitePath `
+        -webappName "api" `
+        -webappPath $webappPath `
+        -webappUsername "sample-user" `
+        -webappPassword "apassword"
+
+    Assert-Equal $siteName (Get-Website -Name $siteName).Name
+}
+
+function Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteOptionsIsNotSpecified  {
+
+    $siteName = "invalidsite"
+    $webappName = "api"
+    $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
+    $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
     try {
-        Create-WebApplication -name $shellpowerApi `
-            -siteName "invalidwebsitte" `
-            -appPool $shellpowerApi `
-            -physicalPath "$root\$shellpowerApi"
+        Add-WebApplicationToWebSite -siteName $siteName `
+            -webappName $webappName `
+            -webappPath $webappPath
     } catch {
-        AssertEqual "Failed to create web application 'api2', web site 'invalidwebsitte' was not found" $_.Exception.Message
+        Assert-Equal "Failed to create web application '$webappName', web site '$siteName' was not found" $_.Exception.Message
     }
 }
 
+function Test-WebApplicationCanBeCreatedForValidVirDir {
+    
+    $siteName = "shellpower2"
+    $virDirName = "vir"
+    $webappName = "api"
+    $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
+    $virDirPath = "$_root\$siteName\$virDirName"; Ensure-PathExists $virDirPath
+    $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
+
+    Add-WebApplicationToVirtualDirectory -siteName $siteName `
+        -sitePath $sitePath `
+        -virDirName $virDirName `
+        -virDirPath $virDirPath `
+        -webappName $webappName `
+        -webappPath $webappPath `
+        -webappUsername "sample-user" `
+        -webappPassword "apassword"
+}
+
+function Test-WebApplicationCannotBeCreatedForInValidVirDirIfCreateVirDirOptionIsNotSpecified {
+    
+    $siteName = "shellpower2"
+    $virDirName = "invalidvir"
+    $webappName = "api"
+    $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
+    $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
+
+    Add-WebApplicationToVirtualDirectory -siteName $siteName `
+        -sitePath $sitePath `
+        -virDirName $virDirName `
+        -webappName $webappName `
+        -webappPath $webappPath
+}
+
+function Remove-Setup {
+    Remove-Website -Name "shellpower1"; Remove-WebAppPool -Name "shellpower1"; 
+    Remove-WebAppPool -Name "shellpower1_api"
+    Remove-Website -Name "shellpower2"; Remove-WebAppPool -Name "shellpower2";
+    Remove-WebAppPool -Name "shellpower2_vir_api"
+    Remove-Item -Path $_root -Recurse -Force
+}
+
+# Remove-Setup
 Test-WebApplicationCanBeCreatedForValidWebSite
-Test-WebApplicationCannotBeCreatedForInvalidWebSite
+Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteOptionsIsNotSpecified
+Test-WebApplicationCanBeCreatedForValidVirDir
+# Test-WebApplicationCannotBeCreatedForInValidVirDirIfCreateVirDirOptionIsNotSpecified
