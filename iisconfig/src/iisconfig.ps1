@@ -46,7 +46,7 @@ function Create-AppPool(
 
     Write-Host "Creating new AppPool '$name'"
     if((AppPool-Exists $name)) {
-        Write-Warning "AppPool '$name' already exists, removing it"
+        Write-Warning "AppPool '$name' already exists, deleting it"
         Remove-WebAppPool $name
     }
 
@@ -73,7 +73,7 @@ function Create-AppPool(
 function Ensure-SiteExists([Parameter(mandatory=$true)][string] $siteName) {
   
   if((Get-Website -Name $siteName).Name -ne $siteName) {
-    $message = "Failed to create web application '$name', web site '$siteName' was not found"
+    $message = "Failed to create web application '$name', website '$siteName' was not found"
     throw [System.InvalidOperationException] $message
   }
 }
@@ -86,13 +86,17 @@ function Create-WebApplication (
     [string] $password,
     [bool] $isNetCore=$true) {
       
-    Write-Host "Creating web application '$name' for web site '$siteName' with app pool '$appPool' and path '$physicalPath'"
+    Write-Host "Creating web application '$name' for website '$siteName' with app pool '$appPool' and path '$physicalPath'"
 
-    $siteParts = $siteName.Split("\")
+    $siteParts = $siteName.Split("/")
     if($siteParts.Length -gt 0) {
       Ensure-SiteExists $siteParts[0]
+      $existingWebapp = "{0}/{1}" -f $siteParts[1], $name
+      Delete-WebApplication $existingWebapp $siteParts[0]
+
     } else {
       Ensure-SiteExists $siteName
+      Delete-WebApplication $name $siteName
     }
     
     if($isNetCore) {$runtimeVersion = "No Managed Code"} else {$runtimeVersion = "v4.0"}
@@ -109,12 +113,24 @@ function Create-WebApplication (
       -Force
 }
 
+function Delete-WebApplication(  
+  [Parameter(mandatory=$true)][string] $name,
+  [Parameter(mandatory=$true)][string] $siteName) {
+
+    if(Get-WebApplication -Name $name -Site $siteName) {
+      Write-Warning "Web application '$name' already exists for website '$siteName', deleteing it"
+      Remove-WebApplication -Name $name -Site $siteName
+    }else {
+      Write-Warning "Web application '$name' not found for website '$siteName', nothing deleted"
+    }
+}
+
 function Create-WebVirtualDirectory (
     [Parameter(mandatory=$true)][string] $name,
     [Parameter(mandatory=$true)][string] $siteName,
     [Parameter(mandatory=$true)][string] $physicalPath) {
 
-    Write-Host "Creating web vir dir '$name' for web site '$siteName' with path '$physicalPath'"
+    Write-Host "Creating web vir dir '$name' for website '$siteName' with path '$physicalPath'"
     New-WebVirtualDirectory `
       -Site $siteName `
       -Name $name `
@@ -135,7 +151,7 @@ function Add-WebApplicationToWebSite(
   if(![string]::IsNullOrEmpty($sitePath)) {  
     Create-Website -name $siteName -port 80 -appPool $appPoolName -physicalPath $sitePath
   } else {
-    Write-Host "Skipped creating web site '$siteName'"
+    Write-Host "Skipped creating website '$siteName'"
   }
 
   $appPoolName = "{0}_{1}" -f $siteName.Replace(' ', ''), $webappName.Replace(' ', '')
@@ -164,7 +180,7 @@ function Add-WebApplicationToVirtualDirectory(
   if(![string]::IsNullOrEmpty($sitePath)) {  
     Create-Website -name $siteName -port 80 -appPool $appPoolName -physicalPath $sitePath
   } else {
-    Write-Host "Skipped creating web site '$siteName'"
+    Write-Host "Skipped creating website '$siteName'"
   }
 
   if(![string]::IsNullOrEmpty($virDirPath)) {
@@ -181,7 +197,7 @@ function Add-WebApplicationToVirtualDirectory(
     $webappName.Replace(' ', '')
   
   Create-WebApplication -name $webappName `
-    -siteName "$siteName\$virDirName" `
+    -siteName "$siteName/$virDirName" `
     -appPool $appPoolName `
     -physicalPath $webappPath `
     -username $webappUsername `

@@ -17,9 +17,9 @@ function Assert-NotEqual ($expected, $actual, $message) {
 
 function Ensure-PathExists([Parameter(mandatory=$true)][string] $path) {
     if(-Not (Test-Path $path)) {
-      Write-Warning "'$path' does not exist. Creating it"
+      Write-Host "'$path' does not exist. Creating it"
       mkdir -Force $path
     } else {
-        Write-Warning "'$path' already exists"
+        Write-Host "'$path' already exists"
     }
   }

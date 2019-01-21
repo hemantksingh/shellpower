@@ -57,7 +57,7 @@ function Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteOptio
             -webappName $webappName `
             -webappPath $webappPath
     } catch {
-        Assert-Equal "Failed to create web application '$webappName', web site '$siteName' was not found" $_.Exception.Message
+        Assert-Equal "Failed to create web application '$webappName', website '$siteName' was not found" $_.Exception.Message
     }
 }
 
@@ -77,6 +77,15 @@ function Test-WebApplicationCanBeCreatedForValidVirDir {
         -webappName $webappName `
         -webappPath $webappPath `
         -webappUsername "sample-user" `
+        -webappPassword "apassword"
+    
+    # Web application is recreated for an existing website and vir dir
+
+    Add-WebApplicationToVirtualDirectory -siteName $siteName `
+        -virDirName $virDirName `
+        -webappName $webappName `
+        -webappPath $webappPath `
+        -webappUsername "sample-user1" `
         -webappPassword "apassword"
 }
 
