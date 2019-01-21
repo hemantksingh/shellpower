@@ -17,7 +17,10 @@ Provides powershell cmdlets for setting up and configuring web applications in I
     # dot source the script
     . packages\bin\iisconfig.ps1
 
-    Create-AppPoolWithIdentity -name "testappPool" -username "test-user" -password "test-password"
+    # add a web application to an existing website
+    Add-WebApplicationToWebSite -siteName "Default Web Site" `
+        -webappName "api" `
+        -webappPath "C:\inetpub\api"
     ```
 
 * Run `.\getting-started.ps1`
