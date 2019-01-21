@@ -4,8 +4,13 @@ param (
 
 function Handle-Result(
     [Parameter(mandatory=$true)][string] $sqlQuery,
-    [Parameter(mandatory=$true)][System.Object] $out) {
+    [Parameter(mandatory=$false)][System.Object] $out) {
     $nl = [Environment]::NewLine    
+    
+    if ( $null -eq $out ) {
+        Write-Host "Executed SQL Command!!!"
+    }    
+    
     if ($LASTEXITCODE -ne 0) {
         throw "An error occurred while running sql $nl'$sqlQuery'$nl" + "ERROR: $out"
     } else {
