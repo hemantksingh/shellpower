@@ -37,6 +37,8 @@ function AppPool-Exists([Parameter(mandatory=$true)]
 
 function Create-AppPool(
     [Parameter(mandatory=$true)][string] $name,
+    [string] $username,
+    [string] $password,
     [string] $runtimeVersion) {
 
     Write-Host "Creating new AppPool '$name'"
@@ -46,29 +48,23 @@ function Create-AppPool(
     }
 
     $appPool = New-WebAppPool "$name" -Force
-    $appPool.processModel.identityType = "ApplicationPoolIdentity"
-    $appPool | Set-Item
-
+    if(![string]::IsNullOrEmpty($username) -and ![string]::IsNullOrEmpty($password)) {
+      Write-Host "Adding user identity to AppPool '$name'"
+      $appPool.processModel.userName = $username
+      $appPool.processModel.password = $password
+      $appPool.processModel.identityType = "SpecificUser"
+      $appPool | Set-Item
+    } else {
+      Write-Host "Adding application identity to AppPool '$name'"
+      $appPool.processModel.identityType = "ApplicationPoolIdentity"
+      $appPool | Set-Item
+    }
+    
     if($runtimeVersion -eq "No Managed Code") {
       Write-Host "Updating runtime for AppPool '$name'"
       # Default runtime assigned is v4.0
       $appPool | Set-ItemProperty -Name "managedRuntimeVersion" -Value ""
     }
-    return $appPool
-}
-
-function Create-AppPoolWithIdentity(
-    [Parameter(mandatory=$true)][string] $name,
-    [Parameter(mandatory=$true)][string] $username,
-    [Parameter(mandatory=$true)][string] $password,
-    [string] $runtimeVersion) {
-
-    Write-Host "Creating new AppPool '$name' with identity"
-    $appPool = Create-AppPool $name $runtimeVersion
-    $appPool.processModel.userName = $username
-    $appPool.processModel.password = $password
-    $appPool.processModel.identityType = "SpecificUser"
-    $appPool | Set-Item
 }
 
 function Ensure-SiteExists([Parameter(mandatory=$true)][string] $siteName) {
@@ -131,21 +127,14 @@ function Add-WebApplicationToWebSite(
   }
 
   $appPoolName = "{0}_{1}" -f $siteName.Replace(' ', ''), $webappName.Replace(' ', '')
+  Create-AppPool -name $appPoolName `
+    -username $webappUsername `
+    -password $webappPassword
 
-  if(![string]::IsNullOrEmpty($webappUsername) -and ![string]::IsNullOrEmpty($webappPassword)) {
-    Create-AppPoolWithIdentity `
-      -name $appPoolName `
-      -username $webappUsername `
-      -password $webappPassword
-  } else {
-    Create-AppPool -name $appPoolName
-  }
-
-  Create-WebApplication `
-      -name $webappName `
-      -siteName $siteName `
-      -appPool $appPoolName `
-      -physicalPath $webappPath
+  Create-WebApplication -name $webappName `
+    -siteName $siteName `
+    -appPool $appPoolName `
+    -physicalPath $webappPath
 }
 
 function Add-WebApplicationToVirtualDirectory(
@@ -179,14 +168,9 @@ function Add-WebApplicationToVirtualDirectory(
     $virDirName.Replace(' ', ''), 
     $webappName.Replace(' ', '')
   
-  if(![string]::IsNullOrEmpty($webappUsername) -and ![string]::IsNullOrEmpty($webappPassword)) {
-    Create-AppPoolWithIdentity `
-      -name $appPoolName `
-      -username $webappUsername `
-      -password $webappPassword
-  } else {
-    Create-AppPool -name $appPoolName
-  }
+  Create-AppPool -name $appPoolName `
+    -username $webappUsername `
+    -password $webappPassword
 
   Create-WebApplication `
     -name $webappName `

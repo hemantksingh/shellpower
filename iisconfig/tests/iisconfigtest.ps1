@@ -37,7 +37,7 @@ function Test-WebApplicationWithIdentityCanBeCreatedForValidWebSite {
     Assert-Equal $siteName (Get-Website -Name $siteName).Name
 }
 
-function Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteIsNotSpecified  {
+function Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteOptionsIsNotSpecified  {
 
     $siteName = "invalidsite"
     $webappName = "api"
@@ -52,7 +52,7 @@ function Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteIsNot
     }
 }
 
-function Test-WebApplicationCanBeCreatedForValidVirtualDirectory {
+function Test-WebApplicationCanBeCreatedForValidVirDir {
     
     $siteName = "shellpower2"
     $virDirName = "vir"
@@ -71,6 +71,21 @@ function Test-WebApplicationCanBeCreatedForValidVirtualDirectory {
         -webappPassword "apassword"
 }
 
+function Test-WebApplicationCannotBeCreatedForInValidVirDirIfCreateVirDirOptionIsNotSpecified {
+    
+    $siteName = "shellpower2"
+    $virDirName = "invalidvir"
+    $webappName = "api"
+    $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
+    $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
+
+    Add-WebApplicationToVirtualDirectory -siteName $siteName `
+        -sitePath $sitePath `
+        -virDirName $virDirName `
+        -webappName $webappName `
+        -webappPath $webappPath
+}
+
 function Remove-Setup {
     Remove-Website -Name "shellpower1"; Remove-WebAppPool -Name "shellpower1"; 
     Remove-WebAppPool -Name "shellpower1_api"
@@ -81,5 +96,6 @@ function Remove-Setup {
 
 # Remove-Setup
 Test-WebApplicationCanBeCreatedForValidWebSite
-Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteIsNotSpecified
-Test-WebApplicationCanBeCreatedForValidVirtualDirectory
+Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteOptionsIsNotSpecified
+Test-WebApplicationCanBeCreatedForValidVirDir
+# Test-WebApplicationCannotBeCreatedForInValidVirDirIfCreateVirDirOptionIsNotSpecified
