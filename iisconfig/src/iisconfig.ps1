@@ -10,7 +10,7 @@ function Create-Website (
 
     Write-Host "Creating website '$name' with appPool '$appPool' on port '$port' and path '$physicalPath'"
     Delete-Website $name
-    Create-AppPool -name $appPoolName -username $username -password $password
+    Create-AppPool -name $appPool -username $username -password $password
 
     New-Website `
       -Name $name `
@@ -42,7 +42,7 @@ function Create-AppPool(
     [Parameter(mandatory=$true)][string] $name,
     [string] $username,
     [string] $password,
-    [string] $runtimeVersion) {
+    [string] $runtimeVersion="v4.0") {
 
     Write-Host "Creating new AppPool '$name'"
     if((AppPool-Exists $name)) {
