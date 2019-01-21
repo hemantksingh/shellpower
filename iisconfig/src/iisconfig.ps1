@@ -78,7 +78,10 @@ function Create-WebApplication (
     [Parameter(mandatory=$true)][string] $name,
     [Parameter(mandatory=$true)][string] $siteName,
     [Parameter(mandatory=$true)][string] $appPool,
-    [Parameter(mandatory=$true)][string] $physicalPath) {
+    [Parameter(mandatory=$true)][string] $physicalPath,
+    [string] $username,
+    [string] $password,
+    [bool] $isNetCore=$true) {
       
     Write-Host "Creating web application '$name' for web site '$siteName' with app pool '$appPool' and path '$physicalPath'"
 
@@ -88,6 +91,12 @@ function Create-WebApplication (
     } else {
       Ensure-SiteExists $siteName
     }
+    
+    if($isNetCore) {$runtimeVersion = "No Managed Code"} else {$runtimeVersion = "v4.0"}
+    Create-AppPool -name $appPool `
+      -username $username `
+      -password $password `
+      -runtimeVersion $runtimeVersion
 
     New-WebApplication `
       -Site $siteName `
@@ -116,7 +125,8 @@ function Add-WebApplicationToWebSite(
     [Parameter(mandatory=$true)][string] $webappName,
     [Parameter(mandatory=$true)][string] $webappPath,
     [string] $webappUsername,
-    [string] $webappPassword) {
+    [string] $webappPassword,
+    [bool] $isNetCore = $true) {
 
   if(![string]::IsNullOrEmpty($sitePath)) {
     $appPoolName = $siteName.Replace(' ', '')
@@ -127,14 +137,14 @@ function Add-WebApplicationToWebSite(
   }
 
   $appPoolName = "{0}_{1}" -f $siteName.Replace(' ', ''), $webappName.Replace(' ', '')
-  Create-AppPool -name $appPoolName `
-    -username $webappUsername `
-    -password $webappPassword
-
+  
   Create-WebApplication -name $webappName `
     -siteName $siteName `
     -appPool $appPoolName `
-    -physicalPath $webappPath
+    -physicalPath $webappPath `
+    -username $webappUsername `
+    -password $webappPassword `
+    -isNetCore $isNetCore
 }
 
 function Add-WebApplicationToVirtualDirectory(
@@ -145,7 +155,8 @@ function Add-WebApplicationToVirtualDirectory(
     [Parameter(mandatory=$true)][string] $webappName,
     [Parameter(mandatory=$true)][string] $webappPath,
     [string] $webappUsername,
-    [string] $webappPassword) {
+    [string] $webappPassword,
+    [bool] $isNetCore=$true) {
   
   if(![string]::IsNullOrEmpty($sitePath)) {
     $appPoolName = $siteName.Replace(' ', '')
@@ -168,13 +179,11 @@ function Add-WebApplicationToVirtualDirectory(
     $virDirName.Replace(' ', ''), 
     $webappName.Replace(' ', '')
   
-  Create-AppPool -name $appPoolName `
-    -username $webappUsername `
-    -password $webappPassword
-
-  Create-WebApplication `
-    -name $webappName `
+  Create-WebApplication -name $webappName `
     -siteName "$siteName\$virDirName" `
     -appPool $appPoolName `
-    -physicalPath $webappPath
+    -physicalPath $webappPath `
+    -username $webappUsername `
+    -password $webappPassword `
+    -isNetCore $isNetCore
 }
