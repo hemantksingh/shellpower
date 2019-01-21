@@ -6,14 +6,14 @@ function Handle-Result(
     [Parameter(mandatory=$true)][string] $sqlQuery,
     [Parameter(mandatory=$false)][System.Object] $out) {
     $nl = [Environment]::NewLine    
-    
-    if ( $null -eq $out ) {
-        Write-Host "Executed SQL Command!!!"
-    }    
-    
+        
     if ($LASTEXITCODE -ne 0) {
+        Write-Host "LASTEXITCODE: $LASTEXITCODE"
         throw "An error occurred while running sql $nl'$sqlQuery'$nl" + "ERROR: $out"
-    } else {
+    } elseif ( $null -eq $out ) {
+        Write-Host "Executed SQL Command!!!"
+    }
+    else {
         Write-Host $out
     }
 }
