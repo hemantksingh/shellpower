@@ -204,3 +204,9 @@ function Add-WebApplicationToVirtualDirectory(
     -password $webappPassword `
     -isNetCore $isNetCore
 }
+
+function Get-AppPoolBySiteAppAndService([string] $siteName, [string] $appName, [string] $service) {
+    $webAppName = $appName + "/$service"
+    Write-Host "Looking up app pool by site" +  $siteName + "for $webAppName"
+    return  (Get-WebApplication -Site $siteName -Name $webAppName ).ApplicationPool
+}
