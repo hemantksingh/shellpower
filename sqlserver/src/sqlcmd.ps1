@@ -11,7 +11,7 @@ function Handle-Result(
         Write-Host "LASTEXITCODE: $LASTEXITCODE"
         throw "An error occurred while running sql $nl'$sqlQuery'$nl" + "ERROR: $out"
     } elseif ( $null -eq $out ) {
-        Write-Host "Executed SQL Command!!!"
+        Write-Host "SQL command executed successfully!!!"
     }
     else {
         Write-Host $out
