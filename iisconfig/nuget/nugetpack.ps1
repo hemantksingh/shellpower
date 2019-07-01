@@ -10,9 +10,24 @@ $artifactDir = "$currentDir\bin"
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "Copying contents $publishDir to $artifactDir"
-Copy-Item $publishDir -Filter "*.ps1" -Destination $artifactDir -Recurse -Force
+function Add-DirIfDoesNotExist( [Parameter(Mandatory = $true)][string] $dir) {
+    if (!(test-path $dir)) {
+        Write-Host "Creating dir '$dir'"
+        New-Item -ItemType Directory -Force -Path $dir
+    }
+    else {
+        Write-Host "Directory '$dir' already exists, removing its contents"
+        Remove-Item -Path "$dir\*" -Recurse
+    }
+}
 
-(Get-Content $nuspec) -replace "<version>.*</version>", "<version>$($version)</version>" | Set-Content $nuspec
+Add-DirIfDoesNotExist $artifactDir
+
+Write-Host "Copying contents $publishDir to $artifactDir"
+Copy-Item $publishDir\*.ps1 -Destination $artifactDir -Recurse -Force
+
+(Get-Content $nuspec) `
+    -replace "<version>.*</version>", "<version>$($version)</version>" |
+    Set-Content $nuspec
 
 nuget pack $nuspec -exclude "*.nupkg;*.nuspec;nugetpack.ps1"
