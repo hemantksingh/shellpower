@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory=$true)][string] $application,
     [Parameter(Mandatory=$true)][string] $version,
-    [Parameter(Mandatory=$true)][string] $publishDir
+    [Parameter(Mandatory=$true)][string] $publishDir,
+    [Parameter(Mandatory=$true)][string] $gitCommit
 )
 
 $currentDir = $PSScriptRoot
@@ -27,7 +28,8 @@ Write-Host "Copying contents $publishDir to $artifactDir"
 Copy-Item $publishDir\*.ps1 -Destination $artifactDir -Recurse -Force
 
 (Get-Content $nuspec) `
-    -replace "<version>.*</version>", "<version>$($version)</version>" |
+    -replace "<version>.*</version>", "<version>$($version)</version>" `
+    -replace 'commit=""', "commit=""$gitCommit""" |
     Set-Content $nuspec
 
 nuget pack $nuspec -exclude "*.nupkg;*.nuspec;nugetpack.ps1"

@@ -45,7 +45,7 @@ after_build:
   - ps: iisconfig\tests\iisconfigtest.ps1 
   - cmd: make package APPLICATION=iisconfig BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
   - cmd: make test APPLICATION=sqlserver DBSERVER="(local)\SQL2017" TRUSTED_CONNECTION=false
-  - cmd: make package APPLICATION=sqlserver BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
+  - cmd: make package APPLICATION=sqlserver BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% GIT_COMMIT=%APPVEYOR_REPO_COMMIT%
   
 artifacts:
   - path: '**\*.nupkg' # push all *.nupkg files in build directory recursively
