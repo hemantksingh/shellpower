@@ -4,6 +4,7 @@ Import-Module WebAdministration
 
 $currentDir = Split-Path $script:MyInvocation.MyCommand.Path
 . $currentDir\apppool.ps1
+. $currentDir\certificate.ps1
 
 function Create-Website (
     [Parameter(mandatory=$true)][string] $name,
@@ -14,12 +15,9 @@ function Create-Website (
     [string] $password,
     [string] $protocol ='http',
     [string] $hostHeader ="$name.test.com",
-    [bool] $deleteWebsite = $false) {
+    [string] $certificateThumbprint) {
 
     Write-Host "Creating website '$name' with appPool '$appPool' on port '$port' and path '$physicalPath'"
-    if($deleteWebsite) {
-      Delete-Website $name
-    }
     Create-AppPool -name $appPool -username $username -password $password
     
     New-Website `
@@ -31,12 +29,16 @@ function Create-Website (
     
     Get-WebBinding -Port $port -Name $name | Remove-WebBinding
     Write-Host "Adding web binding '$name' with protocol '$protocol', port '$port' and host header '$hostHeader' "
-    New-WebBinding -Name $name -IPAddress "*" -Port $port -Protocol $protocol -HostHeader $hostHeader
-
-    Write-Host "Starting website '$name' ..."
+    $webBinding = New-WebBinding -Name $name -IPAddress "*" -Port $port -Protocol $protocol -HostHeader $hostHeader
     Start-Sleep 2 
     # MS recommends waiting before a new web binding takes effect
     # https://docs.microsoft.com/en-us/powershell/module/webadminstration/remove-webbinding?view=winserver2012-ps
+
+    if(![string]::IsNullOrWhiteSpace($certificateThumbrint)) {
+      Add-InstalledCertificateToBinding $certificateThumbrint $webBinding
+    }
+
+    Write-Host "Starting website '$name' ..."
     Start-Website -Name $name
 }
 

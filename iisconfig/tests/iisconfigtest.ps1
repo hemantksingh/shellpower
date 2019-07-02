@@ -105,6 +105,15 @@ function Test-WebApplicationCannotBeCreatedForInValidVirDirIfCreateVirDirOptionI
         -webappPath $webappPath
 }
 
+function Test-CreateWebsiteWithCertificate {
+    
+    $certificateThumbprint = Add-SelfSignedCertificate -dnsName 'localhost'
+    $siteName = "shellpower3"
+    $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
+
+    Create-Website $siteName -port 443 -appPool $siteName -physicalPath $siteName -protocol 'https' -certificateThumbprint $certificateThumbprint
+}
+
 function Remove-Setup {
     Remove-Website -Name "shellpower1"; Remove-WebAppPool -Name "shellpower1"; 
     Remove-WebAppPool -Name "shellpower1_api"
@@ -117,4 +126,5 @@ function Remove-Setup {
 Test-WebApplicationCanBeCreatedForValidWebSite
 Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteOptionsIsNotSpecified
 Test-WebApplicationCanBeCreatedForValidVirDir
+Test-CreateWebsiteWithCertificate
 # Test-WebApplicationCannotBeCreatedForInValidVirDirIfCreateVirDirOptionIsNotSpecified
