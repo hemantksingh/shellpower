@@ -1,11 +1,11 @@
 $ErrorActionPreference = "Stop"
 
 $source = (Get-Item -Path ".\iisconfig\src\" -Verbose).FullName
-$currentDir = Split-Path $script:MyInvocation.MyCommand.Path
+$testSrc =  (Get-Item -Path ".\iisconfig\tests\" -Verbose).FullName
 
 Write-Host "Importing from source $source"
 . $source\iisconfig.ps1
-. $currentDir\testutil.ps1
+. $testSrc\testutil.ps1
 
 $_root = "$env:TEMP\shellpower" # This is ususally 'C:\inetpub'
 
@@ -57,7 +57,8 @@ function Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteOptio
             -webappName $webappName `
             -webappPath $webappPath
     } catch {
-        Assert-Equal "Failed to create web application '$webappName', website '$siteName' was not found" $_.Exception.Message
+        Assert-Equal "Failed to create web application '$webappName', website '$siteName' was not found" `
+            $_.Exception.Message
     }
 }
 
