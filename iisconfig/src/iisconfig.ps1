@@ -26,6 +26,15 @@ function Create-Website (
       -PhysicalPath $physicalPath `
       -ApplicationPool $appPool `
       -Force
+    
+    Get-WebBinding -Port $port -Name $name | Remove-WebBinding
+    New-WebBinding -Name $name -IPAddress "*" -Port $port -HostHeader $name
+
+    Write-Host "Starting website '$name' ..."
+    Start-Sleep 2 
+    # MS reccommends waiting before a new web binding takes effect
+    # https://docs.microsoft.com/en-us/powershell/module/webadminstration/remove-webbinding?view=winserver2012-ps
+    Start-Website -Name $name
 }
 
 function Delete-Website(
