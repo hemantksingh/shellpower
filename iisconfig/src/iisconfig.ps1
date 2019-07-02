@@ -6,12 +6,15 @@ function Create-Website (
     [Parameter(mandatory=$true)][string] $appPool,
     [Parameter(mandatory=$true)][string] $physicalPath,
     [string] $username,
-    [string] $password) {
+    [string] $password,
+    [bool] $deleteWebsite = $false) {
 
     Write-Host "Creating website '$name' with appPool '$appPool' on port '$port' and path '$physicalPath'"
-    Delete-Website $name
+    if($deleteWebsite) {
+      Delete-Website $name
+    }
     Create-AppPool -name $appPool -username $username -password $password
-
+    
     New-Website `
       -Name $name `
       -Port $port  `
