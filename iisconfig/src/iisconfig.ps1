@@ -12,6 +12,8 @@ function Create-Website (
     [Parameter(mandatory=$true)][string] $physicalPath,
     [string] $username,
     [string] $password,
+    [string] $protocol ='http',
+    [string] $hostHeader ="$name.test.com",
     [bool] $deleteWebsite = $false) {
 
     Write-Host "Creating website '$name' with appPool '$appPool' on port '$port' and path '$physicalPath'"
@@ -28,11 +30,12 @@ function Create-Website (
       -Force
     
     Get-WebBinding -Port $port -Name $name | Remove-WebBinding
-    New-WebBinding -Name $name -IPAddress "*" -Port $port -HostHeader $name
+    Write-Host "Adding web binding '$name' with protocol '$protocol', port '$port' and host header '$hostHeader' "
+    New-WebBinding -Name $name -IPAddress "*" -Port $port -Protocol $protocol -HostHeader $hostHeader
 
     Write-Host "Starting website '$name' ..."
     Start-Sleep 2 
-    # MS reccommends waiting before a new web binding takes effect
+    # MS recommends waiting before a new web binding takes effect
     # https://docs.microsoft.com/en-us/powershell/module/webadminstration/remove-webbinding?view=winserver2012-ps
     Start-Website -Name $name
 }
