@@ -5,6 +5,7 @@ Import-Module WebAdministration
 $currentDir = Split-Path $script:MyInvocation.MyCommand.Path
 . $currentDir\apppool.ps1
 . $currentDir\website.ps1
+. $currentDir\webvirtualdir.ps1
 
 function Create-WebApplication (
     [Parameter(mandatory = $true)][string] $name,
@@ -47,19 +48,6 @@ function Delete-WebApplication(
     else {
         Write-Warning "Web application '$name' not found for website '$siteName', nothing deleted"
     }
-}
-
-function Create-WebVirtualDirectory (
-    [Parameter(mandatory = $true)][string] $name,
-    [Parameter(mandatory = $true)][string] $siteName,
-    [Parameter(mandatory = $true)][string] $physicalPath) {
-
-    Write-Host "Creating web vir dir '$name' for website '$siteName' with path '$physicalPath'"
-    New-WebVirtualDirectory `
-        -Site $siteName `
-        -Name $name `
-        -PhysicalPath $physicalPath `
-        -Force
 }
 
 function Add-WebApplicationToWebSite( 
