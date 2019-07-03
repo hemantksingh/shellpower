@@ -12,7 +12,7 @@ function Create-Website (
     [string] $username,
     [string] $password,
     [string] $protocol = 'http',
-    [string] $hostHeader = "$name.test.com",
+    [string] $hostName = "$name.com",
     [string] $certificateThumbprint) {
 
     Write-Host "Creating website '$name' with appPool '$appPool' on port '$port' and path '$physicalPath'"
@@ -26,8 +26,8 @@ function Create-Website (
         -Force
     
     Get-WebBinding -Name $name -Port $port | Remove-WebBinding
-    Write-Host "Adding web binding '$name' with protocol '$protocol', port '$port' and host header '$hostHeader' "
-    $webBinding = New-WebBinding -Name $name -IPAddress "*" -Port $port -Protocol $protocol -HostHeader $hostHeader
+    Write-Host "Adding web binding '$name' with protocol '$protocol', port '$port' and host name '$hostName' "
+    $webBinding = New-WebBinding -Name $name -IPAddress "*" -Port $port -Protocol $protocol -HostHeader $hostName
     Write-Host "Waiting for 2 seconds for the web binding to take effect"; Start-Sleep 2 
     # MS recommends waiting after adding a new web binding
     # https://docs.microsoft.com/en-us/powershell/module/webadminstration/remove-webbinding?view=winserver2012-ps
@@ -39,7 +39,6 @@ function Create-Website (
     Write-Host "Starting website '$name' ..."
     Start-Website -Name $name
 }
-
 function Delete-Website(
     [Parameter(mandatory = $true)]
     [string] $name) {

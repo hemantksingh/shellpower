@@ -118,6 +118,7 @@ function Test-CreateWebsiteWithCertificate {
         -appPool $siteName `
         -physicalPath $sitePath `
         -protocol 'https' `
+        -hostName "$siteName.example.com" `
         -certificateThumbprint $certificateThumbprint
 }
 
