@@ -111,7 +111,11 @@ function Test-CreateWebsiteWithCertificate {
     $siteName = "shellpower3"
     $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
 
-    Create-Website $siteName -port 443 -appPool $siteName -physicalPath $siteName -protocol 'https' -certificateThumbprint $certificateThumbprint
+    Create-Website $siteName -port 443 `
+        -appPool $siteName `
+        -physicalPath $sitePath `
+        -protocol 'https' `
+        -certificateThumbprint $certificateThumbprint
 }
 
 function Remove-Setup {

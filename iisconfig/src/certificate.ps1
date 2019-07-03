@@ -43,12 +43,13 @@ function Add-SelfSignedCertificate(
         return $cert.GetCertHashString()
     }
 
+    Write-Host "Adding certificate with dnsname '$dnsName' and friendly name '$certificateFriendlyName'"
     $cert = New-SelfSignedCertificate `
         -certstorelocation $_certificateStore `
         -dnsname $dnsName `
         -FriendlyName $certificateFriendlyName
 
-    Write-Host "Trusting certificate for '$dnsName'"
+    Write-Host "Trusting the certificate '$dnsName'"
     $destStore = New-Object `
         -TypeName System.Security.Cryptography.X509Certificates.X509Store  `
         -ArgumentList 'root', 'LocalMachine'
