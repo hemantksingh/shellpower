@@ -1,6 +1,8 @@
 branches:
   only:
     - master
+    - /feature.*/
+    - /fix.*/
 
 image:
 - Visual Studio 2017
