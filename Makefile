@@ -11,7 +11,7 @@ GIT_COMMIT?=blah
 
 build:
 	powershell "If(!(test-path $(PUBLISH_DIR))) { New-Item -ItemType Directory -Force -Path $(PUBLISH_DIR)}"
-	cp $(APPLICATION)/src/* $(PUBLISH_DIR)
+	cp -r $(APPLICATION)/src/* $(PUBLISH_DIR)
 	
 package: build
 	powershell ./$(APPLICATION)/nuget/nugetpack.ps1 \

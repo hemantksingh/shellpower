@@ -2,10 +2,10 @@ $ErrorActionPreference = 'Stop';
 
 Import-Module WebAdministration
 
-$currentDir = Split-Path $script:MyInvocation.MyCommand.Path
-. $currentDir\apppool.ps1
-. $currentDir\website.ps1
-. $currentDir\webvirtualdir.ps1
+$libSource = (Get-Item -Path ".\iisconfig\src\lib" -Verbose).FullName
+. $libSource\apppool.ps1
+. $libSource\website.ps1
+. $libSource\webvirtualdir.ps1
 
 function Create-WebApplication (
     [Parameter(mandatory = $true)][string] $name,

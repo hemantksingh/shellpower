@@ -25,7 +25,7 @@ function Add-DirIfDoesNotExist( [Parameter(Mandatory = $true)][string] $dir) {
 Add-DirIfDoesNotExist $artifactDir
 
 Write-Host "Copying contents $publishDir to $artifactDir"
-Copy-Item $publishDir\*.ps1 -Destination $artifactDir -Recurse -Force
+Copy-Item $publishDir\* -Destination $artifactDir -Recurse -Force
 
 (Get-Content $nuspec) `
     -replace "<version>.*</version>", "<version>$($version)</version>" `
