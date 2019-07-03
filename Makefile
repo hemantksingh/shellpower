@@ -1,15 +1,20 @@
 .PHONY: build package push test
 
 APPLICATION?=iisconfig
-BUILD_NUMBER?=0
-APP_VERSION?=1.0.$(BUILD_NUMBER)-rc1
+BUILD_NUMBER?=5
+APP_VERSION?=1.0.$(BUILD_NUMBER)-rc3
 PUBLISH_DIR=${CURDIR}/$(APPLICATION)/out
 PACKAGES_DIR=${CURDIR}/$(APPLICATION)/packages
 PACKAGE=shellpower.$(APPLICATION).$(APP_VERSION)
 NUGET_SOURCE=https://api.nuget.org/v3/index.json
 GIT_COMMIT?=blah
 
-build:
+clean:
+	rm -rf $(PUBLISH_DIR)
+	rm -rf $(PACKAGES_DIR)
+	rm -rf $(APPLICATION)/nuget/bin
+
+build: clean
 	powershell "If(!(test-path $(PUBLISH_DIR))) { New-Item -ItemType Directory -Force -Path $(PUBLISH_DIR)}"
 	cp -r $(APPLICATION)/src/* $(PUBLISH_DIR)
 	
