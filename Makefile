@@ -45,5 +45,7 @@ else
 	@echo Unknown app $(APPLICATION)
 endif
 
-test-package:install
+test-package:package install
+ifeq ($(APPLICATION), iisconfig)
 	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(PACKAGES_DIR)/$(PACKAGE)/bin
+endif

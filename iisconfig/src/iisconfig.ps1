@@ -2,7 +2,8 @@ $ErrorActionPreference = 'Stop';
 
 Import-Module WebAdministration
 
-$libSource = (Get-Item -Path ".\iisconfig\src\lib" -Verbose).FullName
+$libSource = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)\lib"
+Write-Host "Importing from '$libSource'"
 . $libSource\apppool.ps1
 . $libSource\website.ps1
 . $libSource\webvirtualdir.ps1
