@@ -2,13 +2,13 @@
 <package >
   <metadata>
     <id>shellpower.iisconfig</id>
-    <version>1.0.5-rc3</version>
+    <version>1.0.6-rc1</version>
     <title>shellpower.iisconfig</title>
     <authors>hemantksingh</authors>
     <owners>hemantksingh</owners>
     <licenseUrl>https://raw.githubusercontent.com/hemantksingh/shellpower/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/hemantksingh/shellpower</projectUrl>
-    <repository type="git" url="https://github.com/hemantksingh/shellpower" commit="f1addf851b2b0b7a45957753ebe2a031882ae9dd"/>
+    <repository type="git" url="https://github.com/hemantksingh/shellpower" commit="cc7c38664503e7247f76f53ce9b8e427163a507f"/>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Provides powershell cmdlets for setting up and configuring web applications in IIS in a repeatable manner, ideal for continuous integration/deployment scenarios.</description>
     <summary>This package includes the powershell cmdlets, which can be referenced by your powershell scripts for performing common iis configuration operations.</summary>

@@ -27,9 +27,10 @@ Add-DirIfDoesNotExist $artifactDir
 Write-Host "Copying contents $publishDir to $artifactDir"
 Copy-Item $publishDir\* -Destination $artifactDir -Recurse -Force
 
+Write-Host "Updating '$nuspec' version to '$version' and git commit to '$gitCommit'"
 (Get-Content $nuspec) `
     -replace "<version>.*</version>", "<version>$($version)</version>" `
-    -replace 'commit=""', "commit=""$gitCommit""" |
+    -replace 'commit=".*"', "commit=""$gitCommit""" |
     Set-Content $nuspec
 
 nuget pack $nuspec -exclude "*.nupkg;*.nuspec;nugetpack.ps1"
