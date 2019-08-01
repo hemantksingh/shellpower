@@ -13,13 +13,13 @@ Write-Host "Importing from source $source"
 $_root = "$env:TEMP\shellpower" # This is ususally 'C:\inetpub'
 
 function Test-WebApplicationCanBeCreatedForValidWebSite {
-    $siteName = "shellpower1"
-    $webapp ="api"
+    $siteName = "shellpower1"; $webapp ="api"
     $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
     $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
 
+    Create-Website -name $siteName -port 80 -appPool $siteName.Replace(' ', '') -physicalPath $sitePath
+
     Add-WebApplicationToWebSite -siteName $siteName `
-        -sitePath $sitePath `
         -webappName $webapp `
         -webappPath $webappPath
 
@@ -39,8 +39,9 @@ function Test-WebApplicationWithIdentityCanBeCreatedForValidWebSite {
     $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
     $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
 
+    Create-Website -name $siteName -port 80 -appPool $siteName.Replace(' ', '') -physicalPath $sitePath
+
     Add-WebApplicationToWebSite -siteName $siteName `
-        -sitePath $sitePath `
         -webappName "api" `
         -webappPath $webappPath `
         -webappUsername "sample-user" `
@@ -49,7 +50,7 @@ function Test-WebApplicationWithIdentityCanBeCreatedForValidWebSite {
     Assert-Equal $siteName (Get-Website -Name $siteName).Name
 }
 
-function Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteOptionsIsNotSpecified  {
+function Test-WebApplicationCannotBeCreatedForInvalidWebSite  {
 
     $siteName = "invalidsite"
     $webappName = "api"
@@ -132,7 +133,7 @@ function Remove-Setup {
 
 # Remove-Setup
 Test-WebApplicationCanBeCreatedForValidWebSite
-Test-WebApplicationCannotBeCreatedForInvalidWebSiteIfCreateWebsiteOptionsIsNotSpecified
+Test-WebApplicationCannotBeCreatedForInvalidWebSite
 Test-WebApplicationCanBeCreatedForValidVirDir
 Test-CreateWebsiteWithCertificate
 # Test-WebApplicationCannotBeCreatedForInValidVirDirIfCreateVirDirOptionIsNotSpecified

@@ -53,20 +53,11 @@ function Delete-WebApplication(
 
 function Add-WebApplicationToWebSite( 
     [Parameter(mandatory = $true)][string] $siteName,
-    [string] $sitePath,
     [Parameter(mandatory = $true)][string] $webappName,
     [Parameter(mandatory = $true)][string] $webappPath,
     [string] $webappUsername,
     [string] $webappPassword,
     [bool] $isNetCore = $true) {
-
-    $appPoolName = $siteName.Replace(' ', '')
-    if (![string]::IsNullOrEmpty($sitePath)) {  
-        Create-Website -name $siteName -port 80 -appPool $appPoolName -physicalPath $sitePath
-    }
-    else {
-        Write-Host "Skipped creating website '$siteName'"
-    }
 
     $appPoolName = "{0}_{1}" -f $siteName.Replace(' ', ''), $webappName.Replace(' ', '')
   
