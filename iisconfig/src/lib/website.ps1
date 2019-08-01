@@ -58,7 +58,7 @@ function Delete-Website(
 function Ensure-SiteExists([Parameter(mandatory = $true)][string] $siteName) {
   
     if ((Get-Website -Name $siteName).Name -ne $siteName) {
-        $message = "Failed to create web application '$name', website '$siteName' was not found"
+        $message = "Website '$siteName' was not found"
         throw [System.InvalidOperationException] $message
     }
 }

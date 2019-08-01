@@ -72,7 +72,6 @@ function Add-WebApplicationToWebSite(
 
 function Add-WebApplicationToVirtualDirectory(
     [Parameter(mandatory = $true)][string] $siteName,
-    [string] $sitePath,
     [Parameter(mandatory = $true)][string] $virDirName,
     [string] $virDirPath,
     [Parameter(mandatory = $true)][string] $webappName,
@@ -81,14 +80,6 @@ function Add-WebApplicationToVirtualDirectory(
     [string] $webappPassword,
     [bool] $isNetCore = $true) {
   
-    $appPoolName = $siteName.Replace(' ', '')
-    if (![string]::IsNullOrEmpty($sitePath)) {  
-        Create-Website -name $siteName -port 80 -appPool $appPoolName -physicalPath $sitePath
-    }
-    else {
-        Write-Host "Skipped creating website '$siteName'"
-    }
-
     if (![string]::IsNullOrEmpty($virDirPath)) {
         Create-WebVirtualDirectory -name $virDirName `
             -siteName $siteName `
@@ -100,8 +91,8 @@ function Add-WebApplicationToVirtualDirectory(
 
     $appPoolName = "{0}_{1}_{2}" -f `
         $siteName.Replace(' ', ''), 
-    $virDirName.Replace(' ', ''), 
-    $webappName.Replace(' ', '')
+        $virDirName.Replace(' ', ''), 
+        $webappName.Replace(' ', '')
   
     Create-WebApplication -name $webappName `
         -siteName "$siteName/$virDirName" `

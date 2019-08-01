@@ -61,8 +61,7 @@ function Test-WebApplicationCannotBeCreatedForInvalidWebSite  {
             -webappName $webappName `
             -webappPath $webappPath
     } catch {
-        Assert-Equal "Failed to create web application '$webappName', website '$siteName' was not found" `
-            $_.Exception.Message
+        Assert-Equal "Website '$siteName' was not found" $_.Exception.Message
     }
 }
 
@@ -74,9 +73,9 @@ function Test-WebApplicationCanBeCreatedForValidVirDir {
     $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
     $virDirPath = "$_root\$siteName\$virDirName"; Ensure-PathExists $virDirPath
     $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
-
+    
+    Create-Website -name $siteName -port 80 -appPool $siteName.Replace(' ', '') -physicalPath $sitePath
     Add-WebApplicationToVirtualDirectory -siteName $siteName `
-        -sitePath $sitePath `
         -virDirName $virDirName `
         -virDirPath $virDirPath `
         -webappName $webappName `
@@ -85,7 +84,6 @@ function Test-WebApplicationCanBeCreatedForValidVirDir {
         -webappPassword "apassword"
     
     # Web application is recreated for an existing website and vir dir
-
     Add-WebApplicationToVirtualDirectory -siteName $siteName `
         -virDirName $virDirName `
         -webappName $webappName `
@@ -94,19 +92,22 @@ function Test-WebApplicationCanBeCreatedForValidVirDir {
         -webappPassword "apassword"
 }
 
-function Test-WebApplicationCannotBeCreatedForInValidVirDirIfCreateVirDirOptionIsNotSpecified {
+function Test-WebApplicationCannotBeAddedToVirDirForInvalidSite {
     
-    $siteName = "shellpower2"
+    $siteName = "invalidsite"
     $virDirName = "invalidvir"
     $webappName = "api"
-    $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
     $webappPath = "$_root\$siteName\$webappName"; Ensure-PathExists $webappPath
 
-    Add-WebApplicationToVirtualDirectory -siteName $siteName `
-        -sitePath $sitePath `
-        -virDirName $virDirName `
-        -webappName $webappName `
-        -webappPath $webappPath
+    try {
+        Add-WebApplicationToVirtualDirectory -siteName $siteName `
+            -virDirName $virDirName `
+            -webappName $webappName `
+            -webappPath $webappPath
+
+    } catch {
+        Assert-Equal "Website '$siteName' was not found" $_.Exception.Message
+    }
 }
 
 function Test-CreateWebsiteWithCertificate {
@@ -135,5 +136,5 @@ function Remove-Setup {
 Test-WebApplicationCanBeCreatedForValidWebSite
 Test-WebApplicationCannotBeCreatedForInvalidWebSite
 Test-WebApplicationCanBeCreatedForValidVirDir
+Test-WebApplicationCannotBeAddedToVirDirForInvalidSite
 Test-CreateWebsiteWithCertificate
-# Test-WebApplicationCannotBeCreatedForInValidVirDirIfCreateVirDirOptionIsNotSpecified
