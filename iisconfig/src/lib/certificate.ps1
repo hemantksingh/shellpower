@@ -24,7 +24,7 @@ function Add-InstalledCertificateToBinding(
     # $webServerCert = Get-Item $_certificateStore\$certificateThumbprint
     $webServerCert = Get-InstalledCertificate $dnsName
     if($null -eq $webServerCert) {
-        throw "No installed certificate found for dns name '$dnsName'"
+        throw "No installed certificate found for dns '$dnsName'"
     }
 
     Write-Host "Adding ssl certificate '$($webServerCert.Subject)' to web binding '$($webBinding.bindingInformation)'"

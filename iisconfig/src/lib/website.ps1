@@ -3,16 +3,17 @@ $ErrorActionPreference = 'Stop';
 $currentDir = Split-Path $script:MyInvocation.MyCommand.Path
 . $currentDir\apppool.ps1
 . $currentDir\certificate.ps1
+. $currentDir\webbinding.ps1
 
 function Create-Website (
     [Parameter(mandatory = $true)][string] $name,
     [Parameter(mandatory = $true)][int] $port,
     [Parameter(mandatory = $true)][string] $appPool,
     [Parameter(mandatory = $true)][string] $physicalPath,
+    [string] $hostName,
+    [string] $protocol = 'https',
     [string] $username,
-    [string] $password,
-    [string] $protocol = 'http',
-    [string] $hostName) {
+    [string] $password) {
 
     Write-Host "Creating website '$name' with appPool '$appPool' on port '$port' and path '$physicalPath'"
     Create-AppPool -name $appPool -username $username -password $password
@@ -25,14 +26,8 @@ function Create-Website (
         -Force
     
     if (![string]::IsNullOrWhiteSpace($hostName)) {
-        Get-WebBinding -Name $name -Port $port | Remove-WebBinding
-        Write-Host "Adding web binding to site '$name' with protocol '$protocol', port '$port' and host name '$hostName' "
-        New-WebBinding -Name $name -IPAddress "*" -Port $port -Protocol $protocol -HostHeader $hostName
-        Write-Host "Waiting for 2 seconds for the web binding to take effect"; Start-Sleep 2 
-        # MS recommends waiting after adding a new web binding
-        # https://docs.microsoft.com/en-us/powershell/module/webadminstration/remove-webbinding?view=winserver2012-ps
-    
-        Add-InstalledCertificateToBinding $hostName (Get-WebBinding -Name $name -Port $port)
+        $webBinding = Add-WebBinding -siteName $name -port $port -protocol $protocol -hostName $hostName
+        Add-InstalledCertificateToBinding $hostName $webBinding
 
         Write-Host "Starting website '$name' ..."
         Start-Website -Name $name
