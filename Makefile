@@ -10,9 +10,7 @@ NUGET_SOURCE=https://api.nuget.org/v3/index.json
 GIT_COMMIT?=cc7c38664503e7247f76f53ce9b8e427163a507f
 
 clean:
-	rm -rf $(PUBLISH_DIR)
-	rm -rf $(PACKAGES_DIR)
-	rm -rf $(APPLICATION)/nuget/bin
+	git clean -xfd
 
 build: clean
 	powershell "If(!(test-path $(PUBLISH_DIR))) { New-Item -ItemType Directory -Force -Path $(PUBLISH_DIR)}"
