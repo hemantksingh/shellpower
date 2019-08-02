@@ -25,13 +25,13 @@ function Create-Website (
         -ApplicationPool $appPool `
         -Force
     
-    if (![string]::IsNullOrWhiteSpace($hostName)) {
-        $webBinding = Add-WebBinding -siteName $name -port $port -protocol $protocol -hostName $hostName
-        Add-InstalledCertificateToBinding $hostName $webBinding
+    if ([string]::IsNullOrWhiteSpace($hostName)) { return }
+    
+    $webBinding = Add-WebBinding -siteName $name -port $port -protocol $protocol -hostName $hostName
+    Add-InstalledCertificateToBinding $hostName $webBinding
 
-        Write-Host "Starting website '$name' ..."
-        Start-Website -Name $name
-    }
+    Write-Host "Starting website '$name' ..."
+    Start-Website -Name $name
 }
 function Delete-Website(
     [Parameter(mandatory = $true)]

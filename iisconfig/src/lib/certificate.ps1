@@ -8,40 +8,45 @@ function Add-CertificateToBinding(
     $certPassword = ConvertTo-SecureString -String $certificatePassword -Force -AsPlainText
     
     # Install certificate to local store, (Import-PfxCertificate is idempotent)
-    $webServerCert = Import-PfxCertificate `
+    $cert = Import-PfxCertificate `
         -FilePath $certificatePfxFile `
         -CertStoreLocation $_certificateStore `
         -Password $certPassword
 
-    Write-Host "Adding ssl certificate '$($webServerCert.Subject)' to web binding '$($webBinding.bindingInformation)'"
-    $webBinding.AddSslCertificate($webServerCert.GetCertHashString(), "My")
+    Write-Host "Adding ssl certificate '$($cert.Subject)' to web binding '$($webBinding.bindingInformation)'"
+    $webBinding.AddSslCertificate($cert.GetCertHashString(), "My")
 }
 
 function Add-InstalledCertificateToBinding(
     [Parameter(mandatory = $true)][string] $dnsName,
     [Parameter(mandatory = $true)][system.object] $webBinding) {
         
-    # $webServerCert = Get-Item $_certificateStore\$certificateThumbprint
-    $webServerCert = Get-InstalledCertificate $dnsName
-    if($null -eq $webServerCert) {
+    $cert = Get-InstalledCertificateByDns $dnsName
+    if($null -eq $cert) {
         throw "No installed certificate found for dns '$dnsName'"
     }
 
-    Write-Host "Adding ssl certificate '$($webServerCert.Subject)' to web binding '$($webBinding.bindingInformation)'"
-    $webBinding.AddSslCertificate($webServerCert.GetCertHashString(), "My")
+    Write-Host "Adding ssl certificate '$($cert.Subject)' to web binding '$($webBinding.bindingInformation)'"
+    $webBinding.AddSslCertificate($cert.GetCertHashString(), "My")
 }
 
-function Get-InstalledCertificate (
+function Get-InstalledCertificateByDns (
     [Parameter(mandatory = $true)][string] $dnsName) {
         
     Get-ChildItem $_certificateStore | Where-Object { $_.Subject -eq "CN=$dnsName" }
+}
+
+function Get-InstalledCertificateByThumbprint (
+    [Parameter(mandatory = $true)][string] $certificateThumbprint) {
+        
+    Get-Item $_certificateStore\$certificateThumbprint
 }
 
 function Add-SelfSignedCertificate(
     [Parameter(mandatory = $true)][string] $dnsName,
     [string] $certificateFriendlyName=$dnsName) {
 
-    $cert = Get-InstalledCertificate $dnsName
+    $cert = Get-InstalledCertificateByDns $dnsName
     if ($null -ne $cert) {
         Write-Warning "Certificate for '$dnsName' already exists, nothing added"
         return $cert.GetCertHashString()
