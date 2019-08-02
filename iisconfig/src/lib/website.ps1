@@ -10,14 +10,14 @@ function Create-Website (
     [Parameter(mandatory = $true)][int] $port,
     [Parameter(mandatory = $true)][string] $appPool,
     [Parameter(mandatory = $true)][string] $physicalPath,
-    [string] $hostName,
     [string] $protocol = 'https',
+    [string] $hostName,
     [string] $username,
     [string] $password) {
 
-    Write-Host "Creating website '$name' with appPool '$appPool' on port '$port' and path '$physicalPath'"
     Create-AppPool -name $appPool -username $username -password $password
-    
+        
+    Write-Host "Creating website '$name' with appPool '$appPool' on port '$port' and path '$physicalPath'"
     New-Website `
         -Name $name `
         -Port $port  `
@@ -26,7 +26,7 @@ function Create-Website (
         -Force
     
     if ([string]::IsNullOrWhiteSpace($hostName)) { return }
-    
+
     $webBinding = Add-WebBinding -siteName $name -port $port -protocol $protocol -hostName $hostName
     Add-InstalledCertificateToBinding $hostName $webBinding
 
