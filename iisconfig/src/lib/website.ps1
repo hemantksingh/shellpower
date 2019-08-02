@@ -12,8 +12,7 @@ function Create-Website (
     [string] $username,
     [string] $password,
     [string] $protocol = 'http',
-    [string] $hostName = "$name.com",
-    [string] $certificateThumbprint) {
+    [string] $hostName) {
 
     Write-Host "Creating website '$name' with appPool '$appPool' on port '$port' and path '$physicalPath'"
     Create-AppPool -name $appPool -username $username -password $password
@@ -25,19 +24,19 @@ function Create-Website (
         -ApplicationPool $appPool `
         -Force
     
-    Get-WebBinding -Name $name -Port $port | Remove-WebBinding
-    Write-Host "Adding web binding to site '$name' with protocol '$protocol', port '$port' and host name '$hostName' "
-    New-WebBinding -Name $name -IPAddress "*" -Port $port -Protocol $protocol -HostHeader $hostName
-    Write-Host "Waiting for 2 seconds for the web binding to take effect"; Start-Sleep 2 
-    # MS recommends waiting after adding a new web binding
-    # https://docs.microsoft.com/en-us/powershell/module/webadminstration/remove-webbinding?view=winserver2012-ps
+    if (![string]::IsNullOrWhiteSpace($hostName)) {
+        Get-WebBinding -Name $name -Port $port | Remove-WebBinding
+        Write-Host "Adding web binding to site '$name' with protocol '$protocol', port '$port' and host name '$hostName' "
+        New-WebBinding -Name $name -IPAddress "*" -Port $port -Protocol $protocol -HostHeader $hostName
+        Write-Host "Waiting for 2 seconds for the web binding to take effect"; Start-Sleep 2 
+        # MS recommends waiting after adding a new web binding
+        # https://docs.microsoft.com/en-us/powershell/module/webadminstration/remove-webbinding?view=winserver2012-ps
+    
+        Add-InstalledCertificateToBinding $hostName (Get-WebBinding -Name $name -Port $port)
 
-    if (![string]::IsNullOrWhiteSpace($certificateThumbrint)) {
-        Add-InstalledCertificateToBinding $certificateThumbrint (Get-WebBinding -Name $name -Port $port)
+        Write-Host "Starting website '$name' ..."
+        Start-Website -Name $name
     }
-
-    Write-Host "Starting website '$name' ..."
-    Start-Website -Name $name
 }
 function Delete-Website(
     [Parameter(mandatory = $true)]
@@ -70,10 +69,11 @@ function Parse-SitePath(
     $siteParts = $sitePath.Split("/"); $site = $siteParts[0]; $virDir = $siteParts[1]
     if ($siteParts.Length -gt 0) {
         @{
-            site    = $site
+            site   = $site
             webapp = "{0}/{1}" -f $virDir, $webappName
         }
-    } else {
+    }
+    else {
         @{
             site   = $sitePath
             webapp = $webappName
