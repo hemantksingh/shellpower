@@ -112,16 +112,16 @@ function Test-WebApplicationCannotBeAddedToVirDirForInvalidSite {
 
 function Test-CreateWebsiteWithCertificate {
     
-    $certificateThumbprint = Add-SelfSignedCertificate -dnsName 'localhost'
     $siteName = "shellpower3"
+    $hostName = "$siteName.example.com"
     $sitePath = "$_root\$siteName"; Ensure-PathExists $sitePath
+    Add-SelfSignedCertificate -dnsName $hostName
 
     Create-Website $siteName -port 443 `
         -appPool $siteName `
         -physicalPath $sitePath `
         -protocol 'https' `
-        -hostName "$siteName.example.com" `
-        -certificateThumbprint $certificateThumbprint
+        -hostName $hostName
 }
 
 function Remove-Setup {
