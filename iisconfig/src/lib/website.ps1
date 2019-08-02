@@ -26,14 +26,14 @@ function Create-Website (
         -Force
     
     Get-WebBinding -Name $name -Port $port | Remove-WebBinding
-    Write-Host "Adding web binding '$name' with protocol '$protocol', port '$port' and host name '$hostName' "
-    $webBinding = New-WebBinding -Name $name -IPAddress "*" -Port $port -Protocol $protocol -HostHeader $hostName
+    Write-Host "Adding web binding to site '$name' with protocol '$protocol', port '$port' and host name '$hostName' "
+    New-WebBinding -Name $name -IPAddress "*" -Port $port -Protocol $protocol -HostHeader $hostName
     Write-Host "Waiting for 2 seconds for the web binding to take effect"; Start-Sleep 2 
     # MS recommends waiting after adding a new web binding
     # https://docs.microsoft.com/en-us/powershell/module/webadminstration/remove-webbinding?view=winserver2012-ps
 
     if (![string]::IsNullOrWhiteSpace($certificateThumbrint)) {
-        Add-InstalledCertificateToBinding $certificateThumbrint $webBinding
+        Add-InstalledCertificateToBinding $certificateThumbrint (Get-WebBinding -Name $name -Port $port)
     }
 
     Write-Host "Starting website '$name' ..."
