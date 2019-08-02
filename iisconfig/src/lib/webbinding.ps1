@@ -5,6 +5,7 @@ function Add-WebBinding (
     [Parameter(mandatory = $true)][string] $hostName,
     [string] $ipAddress = '*') {
     
+    # Remove existing binding if it exists
     Get-WebBinding -Name $siteName -Port $port | Remove-WebBinding
     
     Write-Host "Adding web binding to site '$siteName' with protocol '$protocol', port '$port' and host name '$hostName' "
