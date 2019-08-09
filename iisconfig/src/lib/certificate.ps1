@@ -21,13 +21,28 @@ function Add-InstalledCertificateToBinding(
     [Parameter(mandatory = $true)][string] $dnsName,
     [Parameter(mandatory = $true)][system.object] $webBinding) {
         
-    $cert = Get-InstalledCertificateByDns $dnsName
+    $cert = Get-InstalledWildCardCertificate $dnsName
     if($null -eq $cert) {
-        throw "No installed certificate found for dns '$dnsName'"
+        $cert = Get-InstalledCertificateByDns $dnsName
+        if($null -eq $cert) {
+            throw "No installed certificate found for dns '$dnsName'"
+        }
     }
 
     Write-Host "Adding ssl certificate with subject '$($cert.Subject)' to web binding '$($webBinding.bindingInformation)'"
     $webBinding.AddSslCertificate($cert.GetCertHashString(), "My")
+}
+
+function Get-InstalledWildCardCertificate(
+    [Parameter(mandatory = $true)][string] $dnsName) {
+    
+    $domain = ($dnsName.Split('.') | Select-Object -Skip 1) -join '.'
+    Write-Host "Looking up wild card certificate for '*.$domain'"
+    $certs = Get-ChildItem $_certificateStore | Where-Object { $_.Subject -match "$domain," }
+    if($certs.length -gt 1) {
+        Handle-MultipleMatches $certs $domain
+    }
+    return $certs | Select-Object -First 1
 }
 
 function Get-InstalledCertificateByDns (
@@ -40,7 +55,7 @@ function Get-InstalledCertificateByDns (
         $exactCerts = $certs | Where-Object { $_.Subject -eq "CN=$dnsName"}
         Handle-MultipleMatches $exactCerts "CN=$dnsName"
 
-        if($exactCerts.length -eq 1 -or $exactCerts.length -gt 1) {
+        if($exactCerts.length -gt 0) {
             $certs = $exactCerts
         }
     }
@@ -76,7 +91,7 @@ function Add-SelfSignedCertificate(
     $cert = Get-InstalledCertificateByDns $dnsName
     if ($null -ne $cert) {
         Write-Warning "Certificate for '$dnsName' already exists, nothing added"
-        return $cert.GetCertHashString()
+        return $cert
     }
 
     Write-Host "Adding certificate with dnsname '$dnsName' and friendly name '$certificateFriendlyName'"
@@ -93,5 +108,5 @@ function Add-SelfSignedCertificate(
     $destStore.Add($cert)
     $destStore.Close()
 
-    return $cert.GetCertHashString()
+    return $cert
 }
