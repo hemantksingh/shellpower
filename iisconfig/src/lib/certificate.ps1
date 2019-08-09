@@ -26,14 +26,41 @@ function Add-InstalledCertificateToBinding(
         throw "No installed certificate found for dns '$dnsName'"
     }
 
-    Write-Host "Adding ssl certificate '$($cert.Subject)' to web binding '$($webBinding.bindingInformation)'"
+    Write-Host "Adding ssl certificate with subject '$($cert.Subject)' to web binding '$($webBinding.bindingInformation)'"
     $webBinding.AddSslCertificate($cert.GetCertHashString(), "My")
 }
 
 function Get-InstalledCertificateByDns (
     [Parameter(mandatory = $true)][string] $dnsName) {
         
-    Get-ChildItem $_certificateStore | Where-Object { $_.Subject -eq "CN=$dnsName" }
+    $certs = Get-ChildItem $_certificateStore | Where-Object { $_.Subject -match $dnsName }
+    if($certs.length -gt 1) {
+        Handle-MultipleMatches $certs $dnsName
+        Write-Host "Looking for an exact match for 'CN=$dnsName'"
+        $exactCerts = $certs | Where-Object { $_.Subject -eq "CN=$dnsName"}
+        Handle-MultipleMatches $exactCerts "CN=$dnsName"
+
+        if($exactCerts.length -eq 1 -or $exactCerts.length -gt 1) {
+            $certs = $exactCerts
+        }
+    }
+    return $certs | Select-Object -First 1
+}
+
+
+function Handle-MultipleMatches($certificates, $dnsName) {
+    if($certificates.length -eq 1) {
+        Write-Host "Exact certificate match found for '$dnsName'"
+    } 
+    elseif ($certificates.length -gt 1) {
+        Write-Warning "Multiple certificates installed matching '$dnsName'"
+        $certificates | foreach-object {
+            Write-Host "$($_.Subject) $($_.Thumbprint)"
+        }
+    } 
+    else {
+        Write-Host "No certificate installed matching '$dnsName'"
+    }
 }
 
 function Get-InstalledCertificateByThumbprint (
