@@ -1,12 +1,11 @@
 param (
   [Parameter(Mandatory = $true)][string] $dbServer,
   [string]$dbName="foo",
-  [string]$winUser
+  [string]$winUser,
+  [string] $source = (Get-Item -Path ".\sqlserver\src\" -Verbose).FullName
 )
 
 $ErrorActionPreference = "Stop"
-
-$source = (Get-Item -Path ".\sqlserver\src\" -Verbose).FullName
 
 Write-Host "Importing from source $source"
 . $source\sqlserver.ps1 -dbServer $dbServer -dbName $dbName

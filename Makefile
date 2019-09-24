@@ -37,7 +37,7 @@ install:
 #WIN_USER?=example\win-user
 DBSERVER?=localhost
 TRUSTED_CONNECTION?=true
-
+SOURCE=$(PACKAGES_DIR)/$(PACKAGE)/bin
 test:
 ifeq ($(APPLICATION), iisconfig)
 	powershell $(APPLICATION)/tests/iisconfigtest.ps1
@@ -50,5 +50,10 @@ endif
 
 test-package:package install
 ifeq ($(APPLICATION), iisconfig)
-	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(PACKAGES_DIR)/$(PACKAGE)/bin
+	powershell $(APPLICATION)/tests/iisconfigtest.ps1 -source $(SOURCE)
+else ifeq ($(APPLICATION), sqlserver)
+	powershell "$(APPLICATION)/tests/sqlservertest.ps1 -dbServer \"$(DBSERVER)\" -winUser \"$(WIN_USER)\" -source $(SOURCE)"
+	powershell "$(APPLICATION)/tests/sqlcmdtest.ps1 -dbServer \"$(DBSERVER)\" -useTrustedConnection $(TRUSTED_CONNECTION) -source $(SOURCE)"
+else
+	@echo Unknown app $(APPLICATION)
 endif

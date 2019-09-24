@@ -9,8 +9,10 @@ Provides powershell cmdlets for performing windows based operations in a repeata
 
 ## Test a package
 
-* Create an application package, install it and run tests against it
-    e.g. `make test-package APPLICATION=iisconfig NUGET_SOURCE=$PWD`
+To ensure the application package is good to be released, you can
+
+* Create an application nuget package, install it locally and run tests against it
+* `make test-package APPLICATION=iisconfig NUGET_SOURCE=$PWD`
 
 ## Appveyor
 

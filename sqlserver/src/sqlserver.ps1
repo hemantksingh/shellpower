@@ -1,6 +1,6 @@
 param (
-  [Parameter(Mandatory = $true)][string] $dbServer,
-  [Parameter(mandatory=$true)][string] $dbName
+    [Parameter(Mandatory = $true)][string] $dbServer,
+    [Parameter(mandatory = $true)][string] $dbName
 )
 
 [reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo")
@@ -11,10 +11,10 @@ $currentDir = Split-Path $script:MyInvocation.MyCommand.Path
 . $currentDir\sqlcmd.ps1 -dbServer $dbServer
 . $currentDir\db.ps1 -dbServer $dbServer
 
-function Add-DbUser ([Parameter(mandatory=$true)][string] $name,
-                    [string] $password,
-                    [System.Array] $serverRoles,
-                    [System.Array] $dbRoles) {
+function Add-DbUser ([Parameter(mandatory = $true)][string] $name,
+    [string] $password,
+    [System.Array] $serverRoles,
+    [System.Array] $dbRoles) {
     
     $dbUser = Create-DbUser $name $password $serverRoles $dbRoles                        
     $userLogin = Create-Login $_server $dbUser.name $dbUser.password
@@ -26,7 +26,7 @@ function Add-DbUser ([Parameter(mandatory=$true)][string] $name,
 }
 
 function Remove-DbUser(
-    [Parameter(mandatory=$true)][string] $dbUser) {
+    [Parameter(mandatory = $true)][string] $dbUser) {
    
     $db = Get-Db $_server $dbName
     Remove-UserFromDb $db $dbUser
@@ -45,23 +45,28 @@ function Create-Login(
         Write-Warning "Login '$loginName' already exists, nothing created"
         return $server.Logins[$loginName]
     }
+    try {
+        $login = New-Object `
+            -TypeName Microsoft.SqlServer.Management.Smo.Login `
+            -ArgumentList $server, $loginName
 
-    $login = New-Object `
-        -TypeName Microsoft.SqlServer.Management.Smo.Login `
-        -ArgumentList $server, $loginName
-
-    if ($password) {
-        Write-Host "Creating SqlLogin '$loginName' on server '$server'"
-        $login.LoginType = [Microsoft.SqlServer.Management.Smo.LoginType]::SqlLogin
-        $login.PasswordExpirationEnabled = $false
-        $login.Create($password)
+        if ($password) {
+            Write-Host "Creating SqlLogin '$loginName' on server '$server'"
+            $login.LoginType = [Microsoft.SqlServer.Management.Smo.LoginType]::SqlLogin
+            $login.PasswordExpirationEnabled = $false
+            $login.Create($password)
+        }
+        else {
+            Write-Host "Creating WindowsUser '$loginName' on server '$server'"
+            $login.LoginType = [Microsoft.SqlServer.Management.Smo.LoginType]::WindowsUser
+            $login.Create()
+        }
+        return $login
     }
-    else {
-        Write-Host "Creating WindowsUser '$loginName' on server '$server'"
-        $login.LoginType = [Microsoft.SqlServer.Management.Smo.LoginType]::WindowsUser
-        $login.Create()
+    catch {
+        Write-Error $_.Exception
+        throw $_.Exception.Message
     }
-    return $login
 }
 
 function Remove-LoginFromServer(
@@ -91,9 +96,9 @@ function Add-LoginToServerRoles(
     [Parameter(mandatory = $true)][Microsoft.SqlServer.Management.Smo.Server] $server,
     [Parameter(mandatory = $true)][string] $loginName,
     [Parameter(mandatory = $true)][System.Array] $roleNames) {
-        $roleNames | foreach-object  {
-            Add-LoginToServerRole $server $loginName $_
-        }
+    $roleNames | foreach-object {
+        Add-LoginToServerRole $server $loginName $_
+    }
 }
 function Create-Db(
     [Parameter(mandatory = $true)][Microsoft.SqlServer.Management.Smo.Server] $server,
@@ -103,12 +108,18 @@ function Create-Db(
         return $database
     }
     Write-Host "Creating database '$name'"
-    $database = New-Object `
-        -TypeName Microsoft.SqlServer.Management.Smo.Database `
-        -argumentlist $server, $name
-    $database.Create()
+    try {
+        $database = New-Object `
+            -TypeName Microsoft.SqlServer.Management.Smo.Database `
+            -argumentlist $server, $name
+        $database.Create()
 
-    return $database
+        return $database
+    }
+    catch {
+        Write-Error $_.Exception
+        throw $_.Exception.Message
+    }
 }
 
 function Get-Db(
@@ -133,11 +144,17 @@ function Add-UserToDb(
         return
     }
     
-    $usr = New-Object `
-        -TypeName Microsoft.SqlServer.Management.Smo.User `
-        -argumentlist $database, $user
-    $usr.Login = $user
-    $usr.Create()
+    try {
+        $usr = New-Object `
+            -TypeName Microsoft.SqlServer.Management.Smo.User `
+            -argumentlist $database, $user
+        $usr.Login = $user
+        $usr.Create()
+    }
+    catch {
+        Write-Error $_.Exception
+        throw $_.Exception.Message
+    }
 }
 
 function Add-UserToDbRole(
@@ -146,7 +163,7 @@ function Add-UserToDbRole(
     [Parameter(mandatory = $true)][string] $roleName) {
     Write-Host "Adding user '$user' to role '$roleName' on database '$database'"
     
-    if(!$database.Roles.Contains($roleName)) {
+    if (!$database.Roles.Contains($roleName)) {
         Write-Warning "Role '$roleName' does not exist on database '$database', creating it"
         $role = New-Object('Microsoft.SqlServer.Management.smo.DatabaseRole') $database, $roleName
         $role.Create();
@@ -165,10 +182,11 @@ function Add-PermissionsToDbRole(
     $dbPermissions = New-Object Microsoft.SqlServer.Management.Smo.DatabasePermissionSet
     $permissions | ForEach-Object {
         $permissionProp = $dbPermissions.psobject.properties[$_]
-        if($permissionProp) {
+        if ($permissionProp) {
             Write-Host "Granting permission '$_' to role '$roleName' on database '$database'"
             $permissionProp.Value = $true
-        } else {
+        }
+        else {
             Write-Host "Permission '$_' not found"
         }
     }
@@ -181,9 +199,9 @@ function Add-UserToDbRoles(
     [Parameter(mandatory = $true)][Microsoft.SqlServer.Management.Smo.Database]$database,
     [Parameter(mandatory = $true)][string] $user,
     [Parameter(mandatory = $true)][System.Array] $roleNames) {
-        $roleNames | foreach-object  {
-            Add-UserToDbRole $database $user $_
-        }
+    $roleNames | foreach-object {
+        Add-UserToDbRole $database $user $_
+    }
 }
 
 function Remove-UserFromDb(

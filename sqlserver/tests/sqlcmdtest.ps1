@@ -1,13 +1,12 @@
 param (
   [Parameter(Mandatory = $true)][string] $dbServer,
   [string]$dbName="foo",
-  [string]$useTrustedConnection="true"
+  [string]$useTrustedConnection="true",
+  [string] $source = (Get-Item -Path ".\sqlserver\src\" -Verbose).FullName
 )
 
 $ErrorActionPreference = "Stop"
 $_useTrustedConnection = [System.Convert]::ToBoolean($useTrustedConnection)
-
-$source = (Get-Item -Path ".\sqlserver\src\" -Verbose).FullName
 
 Write-Host "Importing from source $source"
 . $source\sqlserver.ps1 -dbServer $dbServer -dbName $dbName
