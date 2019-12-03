@@ -1,5 +1,5 @@
 param (
-  [string] $source = (Get-Item -Path ".\iisconfig\src\" -Verbose).FullName
+  [Parameter(mandatory = $true)][string] $source
 )
 
 $ErrorActionPreference = "Stop"
@@ -8,7 +8,7 @@ $tests =  (Get-Item -Path ".\iisconfig\tests\" -Verbose).FullName
 
 Write-Host "Importing from source $source"
 . $source\iisconfig.ps1
-. $tests\testutil.ps1
+. $tests\util.ps1
 
 $_root = "$env:TEMP\shellpower" # This is ususally 'C:\inetpub'
 
