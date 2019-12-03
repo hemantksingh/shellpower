@@ -1,5 +1,5 @@
 param (
-  [string] $source = (Get-Item -Path ".\iisconfig\src\" -Verbose).FullName
+  [Parameter(mandatory = $true)][string] $source
 )
 
 $ErrorActionPreference = "Stop"

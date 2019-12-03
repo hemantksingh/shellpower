@@ -42,13 +42,7 @@ build_script:
 after_build:
   # using appveyor native ps for running tests, 32-bit make possibly runs 32-bit ps 
   # which fails to register cmdlets e.g. AppPool-Exists correctly
-  - ps: | 
-      Get-ChildItem -Path '.\iisconfig\tests' -Filter *.ps1 | 
-          Where-Object { $_.FullName -ne $PSCommandPath } | 
-          ForEach-Object {
-              Write-Host "$([Environment]::NewLine)Running $($_.FullName)$([Environment]::NewLine)"
-              . $_.FullName
-          }
+  - ps: iisconfig\tests\runtests.ps1
   - cmd: make package APPLICATION=iisconfig BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% GIT_COMMIT=%APPVEYOR_REPO_COMMIT%
   - cmd: make test APPLICATION=sqlserver DBSERVER="(local)\SQL2017" TRUSTED_CONNECTION=false
   - cmd: make package APPLICATION=sqlserver BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% GIT_COMMIT=%APPVEYOR_REPO_COMMIT%
