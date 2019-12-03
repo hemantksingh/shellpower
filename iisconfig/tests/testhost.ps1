@@ -9,7 +9,7 @@ $tests =  (Get-Item -Path ".\iisconfig\tests\" -Verbose).FullName
 Write-Host "Importing from source '$source'"
 $testData = (Get-Item -Path ".\iisconfig\tests\testdata" -Verbose).FullName
 . $source\lib\host.ps1 -hostFile $testData\test_hosts
-. $tests\testutil.ps1
+. $tests\util.ps1
 
 Add-HostMapping '127.0.0.3' 'dev3.local.com'
 
