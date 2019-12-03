@@ -8,6 +8,7 @@ Write-Host "Importing from '$libSource'"
 . $libSource\website.ps1
 . $libSource\webvirtualdir.ps1
 . $libSource\host.ps1
+. $libSource\webconfig.ps1
 
 function Create-WebApplication (
     [Parameter(mandatory = $true)][string] $name,
