@@ -26,11 +26,10 @@ function Ensure-PathExists([Parameter(mandatory = $true)][string] $path) {
 }
 
 function Get-TestConfigFile ($application) {
-    $testConfigFile = "{0}\shellpower\{1}\tests\web.config" `
+    $configDir = "{0}\shellpower\{1}\tests" `
         -f $env:TEMP, $application
-    $configDir = Split-Path -Path $testConfigFile
     if (!(Test-Path $configDir)) {
-        New-Item -ItemType Directory -Force -Path $configDir
+        $dir = New-Item -ItemType Directory -Force -Path $configDir
     }
-    return $testConfigFile
+    return "$configDir\web.config"
 }

@@ -12,7 +12,7 @@ $testData = (Get-Item -Path ".\iisconfig\tests\testdata" -Verbose).FullName
 . $tests\util.ps1
 
 $testConfigFile = Get-TestConfigFile 'iisconfig'
-(Get-Content $testData\testweb.config) | Out-File $testConfigFile
+(Get-Content $testData\testweb.config) | Out-File -FilePath $testConfigFile
 
 $rule = Get-RewriteRule -configFile $testConfigFile -ruleName 'HTTP to HTTPS redirect'
 Write-Host $rule.OuterXml
