@@ -29,6 +29,8 @@ function Get-TestConfigFile ($application) {
     $configDir = "{0}\shellpower\{1}\tests" `
         -f $env:TEMP, $application
     if (!(Test-Path $configDir)) {
+        # PS returns multiple items (in an array), capture result 
+        # in var to stop returning an array
         $dir = New-Item -ItemType Directory -Force -Path $configDir
     }
     return "$configDir\web.config"
