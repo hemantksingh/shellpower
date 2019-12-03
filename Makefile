@@ -1,13 +1,13 @@
 .PHONY: build package push test
 
 APPLICATION?=iisconfig
-BUILD_NUMBER?=9
+BUILD_NUMBER?=10
 APP_VERSION?=1.0.$(BUILD_NUMBER)
 PUBLISH_DIR=${CURDIR}/$(APPLICATION)/out
 PACKAGES_DIR=${CURDIR}/$(APPLICATION)/packages
 PACKAGE=shellpower.$(APPLICATION).$(APP_VERSION)
 NUGET_SOURCE=https://api.nuget.org/v3/index.json
-GIT_COMMIT?=cc7c38664503e7247f76f53ce9b8e427163a507f
+GIT_COMMIT?=af39e9091be8c6beacd3d33b6afd4dd2e0133839
 
 clean:
 	git clean -xfd
