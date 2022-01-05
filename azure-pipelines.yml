@@ -7,6 +7,9 @@ pool:
 steps:
 - powershell: |
      Write-Host "Step 1 - Build $(Build.BuildNumber)"
+
+     make -v
+
      make build APPLICATION=iisconfig
 
 - powershell: |
