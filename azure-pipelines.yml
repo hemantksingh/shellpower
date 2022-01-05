@@ -6,8 +6,9 @@ pool:
 
 steps:
 - powershell: |
-     Write-Host "Test step 1"
+     Write-Host "Step 1 - Build"
+     make package
 
 - powershell: |
-     Write-Host "Test step 2"
+     Write-Host "Step 2 - Push to feed"
      
