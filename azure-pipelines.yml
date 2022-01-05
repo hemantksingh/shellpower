@@ -9,7 +9,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $APPLICATION=iisconfig
+      $APPLICATION="iisconfig"
       $CURDIR=$(Agent.BuildDirectory)
       $PUBLISH_DIR=$CURDIR + "\" + $APPLICATION + "\out"
       If(!(test-path $(PUBLISH_DIR))) { New-Item -ItemType Directory -Force -Path $(PUBLISH_DIR)}
