@@ -8,14 +8,19 @@ steps:
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
-    script: 'Write-Host "Step 1 - Build $(Build.BuildNumber)"
-     make build APPLICATION=iisconfig'
+    script: |
+     Write-Host "Step 1 - Build $(Build.BuildNumber)"
+     make build APPLICATION=iisconfig
 
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
-    script: 'Write-Host "Step 2 - Package"
+    script: |
+     Write-Host "Step 2 - Package"
      make package APPLICATION=iisconfig BUILD_NUMBER=$(Build.BuildNumber)
 
-- powershell: |
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
      Write-Host "Step 3 - Push to feed"
