@@ -6,9 +6,13 @@ pool:
 
 steps:
 - powershell: |
-     Write-Host "Step 1 - Build"
-     make package
+     Write-Host "Step 1 - Build $(Build.BuildNumber)"
+     make build APPLICATION=iisconfig
 
 - powershell: |
-     Write-Host "Step 2 - Push to feed"
+     Write-Host "Step 2 - Package"
+     make package APPLICATION=iisconfig BUILD_NUMBER=$(Build.BuildNumber)
+
+- powershell: |
+     Write-Host "Step 3 - Push to feed"
      
