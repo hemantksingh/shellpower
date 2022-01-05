@@ -1,0 +1,13 @@
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- powershell: |
+     Write-Host "Test step 1"
+
+- powershell: |
+     Write-Host "Test step 2"
+     
