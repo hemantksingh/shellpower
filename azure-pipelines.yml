@@ -5,17 +5,17 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- powershell: |
-     Write-Host "Step 1 - Build $(Build.BuildNumber)"
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: 'Write-Host "Step 1 - Build $(Build.BuildNumber)"
+     make build APPLICATION=iisconfig'
 
-     make -v
-
-     make build APPLICATION=iisconfig
-
-- powershell: |
-     Write-Host "Step 2 - Package"
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: 'Write-Host "Step 2 - Package"
      make package APPLICATION=iisconfig BUILD_NUMBER=$(Build.BuildNumber)
 
 - powershell: |
      Write-Host "Step 3 - Push to feed"
-     
