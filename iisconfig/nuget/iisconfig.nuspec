@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>shellpower.iisconfig</id>
+    <id>kalibrate.shellpower.iisconfig</id>
     <version>1.0.0-alpha</version>
-    <title>shellpower.iisconfig</title>
+    <title>kalibrate.shellpower.iisconfig</title>
     <authors>kalibratetechnologies</authors>
     <owners>kalibratetechnologies</owners>
     <licenseUrl>https://raw.githubusercontent.com/kalibratetechnologies/shellpower/master/LICENSE</licenseUrl>
