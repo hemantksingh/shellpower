@@ -25,14 +25,14 @@ steps:
       $PUBLISH_DIR=$CURDIR + "\" + $APPLICATION + "\out"
       If(!(test-path $PUBLISH_DIR)) { New-Item -ItemType Directory -Force -Path $PUBLISH_DIR}
       cp $APPLICATION/src/* $PUBLISH_DIR
-  displayName: 'Step 1 - Build sqlserver'
+  displayName: 'Step 2 - Build sqlserver'
 
 - task: NuGetCommand@2
   inputs:
     command: 'pack'
     packagesToPack: '**/nuget/*.nuspec'
     versioningScheme: 'off'
-  displayName: Step 2 - Package
+  displayName: Step 3 - Package
 
 - task: NuGetCommand@2
   inputs:
@@ -40,4 +40,4 @@ steps:
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
     nuGetFeedType: 'internal'
     publishVstsFeed: '1d61aaf7-b74f-4070-a020-6c945f62e123/f6fd1624-19dc-4993-bc8f-104c4da39c98'
-  displayName: Step 3 - Push to feed
+  displayName: Step 4 - Push to feed
