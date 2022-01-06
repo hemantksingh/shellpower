@@ -22,9 +22,11 @@ steps:
     packagesToPack: '**/nuget/*.nuspec'
     versioningScheme: 'off'
   displayName: Step 2 - Package
-  
-- task: PowerShell@2
+
+- task: NuGetCommand@2
   inputs:
-    targetType: 'inline'
-    script: |
-     Write-Host "Step 3 - Push to feed"
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: '1d61aaf7-b74f-4070-a020-6c945f62e123/f6fd1624-19dc-4993-bc8f-104c4da39c98'
+  displayName: Step 3 - Push to feed
