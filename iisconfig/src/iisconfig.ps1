@@ -51,6 +51,12 @@ function Create-AppPool(
     }
 
     $appPool = New-WebAppPool "$name" -Force
+
+    # Set CPU Limit to 85% over 2 minutes
+    $appPool.cpu.limit = 85000
+    $appPool.cpu.action = "KillW3wp"
+    $appPool.cpu.resetInterval = "00:02:00"
+
     if(![string]::IsNullOrEmpty($username) -and ![string]::IsNullOrEmpty($password)) {
       Write-Host "Adding user identity to AppPool '$name'"
       $appPool.processModel.userName = $username
