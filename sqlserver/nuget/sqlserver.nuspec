@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>shellpower.sqlserver</id>
-    <version>1.0.9-rc1</version>
-    <title>shellpower.sqlserver</title>
-    <authors>hemantksingh</authors>
-    <owners>hemantksingh</owners>
-    <licenseUrl>https://raw.githubusercontent.com/hemantksingh/shellpower/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/hemantksingh/shellpower</projectUrl>
+    <id>kalibrate.shellpower.sqlserver</id>
+    <version>1.0.0-alpha</version>
+    <title>kalibrate.shellpower.sqlserver</title>
+    <authors>kalibratetechnologies</authors>
+    <owners>kalibratetechnologies</owners>
+    <licenseUrl>https://raw.githubusercontent.com/kalibratetechnologies/shellpower/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/kalibratetechnologies/shellpower</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Provides powershell cmdlets for managing and configuring sql server in a repeatable manner, ideal for continuous integration/deployment scenarios.</description>
     <summary>This package includes the powershell cmdlets, which can be referenced by your powershell scripts for performing common sql server configuration operations in a repeatable manner, ideal for continuous integration/deployment scenarios.</summary>
     <releaseNotes>This package includes the powershell cmdlets, which can be referenced by your powershell scripts for performing common sql server configuration operations.</releaseNotes>
-    <copyright>Copyright (2018)</copyright>
+    <copyright>Copyright (2022)</copyright>
     <language>Powershell</language>
     <tags>powershell sqlserver cicd</tags>
   </metadata>
