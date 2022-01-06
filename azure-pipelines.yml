@@ -15,13 +15,14 @@ steps:
       If(!(test-path $PUBLISH_DIR)) { New-Item -ItemType Directory -Force -Path $PUBLISH_DIR}
       cp $APPLICATION/src/* $PUBLISH_DIR
   displayName: 'Step 1 - Build'
+
 - task: NuGetCommand@2
   inputs:
     command: 'pack'
     packagesToPack: '**/nuget/*.nuspec'
-    versioningScheme: 'byBuildNumber'
+    versioningScheme: 'off'
   displayName: Step 2 - Package
-
+  
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
