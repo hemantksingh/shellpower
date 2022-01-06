@@ -5,22 +5,11 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: |
-      $APPLICATION="iisconfig"
-      $CURDIR="$(Agent.BuildDirectory)"
-      $PUBLISH_DIR=$CURDIR + "\" + $APPLICATION + "\out"
-      If(!(test-path $PUBLISH_DIR)) { New-Item -ItemType Directory -Force -Path $PUBLISH_DIR}
-      cp $APPLICATION/src/* $PUBLISH_DIR
-  displayName: 'Step 1 - Build'
+- script: make build APPLICATION=iisconfig
+  displayName: 'Step 1 - Build $(Build.BuildNumber)'
 
-- task: PowerShell@2
-  inputs:
-    filePath: './iisconfig/nuget/nugetpack.ps1'
-    arguments: '-application "iisconfig" -version $(Build.BuildNumber) -publishDir "./iisconfig/out"'
-  displayName: 'Step 2 - Package'
+- script: make package APPLICATION=iisconfig BUILD_NUMBER=$(Build.BuildNumber)
+  displayName: Step 2 - Package
 
 - task: PowerShell@2
   inputs:
