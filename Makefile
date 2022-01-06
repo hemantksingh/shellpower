@@ -10,7 +10,7 @@ NUGET_SOURCE=https://api.nuget.org/v3/index.json
 
 build:
 	powershell "If(!(test-path $(PUBLISH_DIR))) { New-Item -ItemType Directory -Force -Path $(PUBLISH_DIR)}"
-	cp $(APPLICATION)/src/* $(PUBLISH_DIR)
+	powershell "Copy-Item -Path "$(APPLICATION)/src/*" -Destination "$(PUBLISH_DIR)" -Recurse"
 	
 package: build
 	powershell ./$(APPLICATION)/nuget/nugetpack.ps1 \
