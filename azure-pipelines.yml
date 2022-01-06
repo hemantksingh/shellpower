@@ -9,14 +9,17 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-     make build APPLICATION=iisconfig
-  displayName: 'Step 1 - Build $(Build.BuildNumber)'
-
-- task: PowerShell@2
+      $APPLICATION="iisconfig"
+      $CURDIR="$(Agent.BuildDirectory)"
+      $PUBLISH_DIR=$CURDIR + "\" + $APPLICATION + "\out"
+      If(!(test-path $PUBLISH_DIR)) { New-Item -ItemType Directory -Force -Path $PUBLISH_DIR}
+      cp $APPLICATION/src/* $PUBLISH_DIR
+  displayName: 'Step 1 - Build'
+- task: NuGetCommand@2
   inputs:
-    targetType: 'inline'
-    script: |
-     make package APPLICATION=iisconfig BUILD_NUMBER=$(Build.BuildNumber)
+    command: 'pack'
+    packagesToPack: '**/nuget/*.nuspec'
+    versioningScheme: 'byBuildNumber'
   displayName: Step 2 - Package
 
 - task: PowerShell@2
