@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>kalibrate.shellpower.sqlserver</id>
-    <version>1.0.0-alpha</version>
+    <version>1.0.0</version>
     <title>kalibrate.shellpower.sqlserver</title>
     <authors>kalibratetechnologies</authors>
     <owners>kalibratetechnologies</owners>
