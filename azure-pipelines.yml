@@ -14,7 +14,18 @@ steps:
       $PUBLISH_DIR=$CURDIR + "\" + $APPLICATION + "\out"
       If(!(test-path $PUBLISH_DIR)) { New-Item -ItemType Directory -Force -Path $PUBLISH_DIR}
       cp $APPLICATION/src/* $PUBLISH_DIR
-  displayName: 'Step 1 - Build'
+  displayName: 'Step 1 - Build iisconfig'
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $APPLICATION="sqlserver"
+      $CURDIR="$(Agent.BuildDirectory)"
+      $PUBLISH_DIR=$CURDIR + "\" + $APPLICATION + "\out"
+      If(!(test-path $PUBLISH_DIR)) { New-Item -ItemType Directory -Force -Path $PUBLISH_DIR}
+      cp $APPLICATION/src/* $PUBLISH_DIR
+  displayName: 'Step 1 - Build sqlserver'
 
 - task: NuGetCommand@2
   inputs:
