@@ -38,7 +38,7 @@ function Get-InstalledWildCardCertificate(
     
     $domain = ($dnsName.Split('.') | Select-Object -Skip 1) -join '.'
     Write-Host "Looking up wild card certificate for '*.$domain'"
-    $certs = Get-ChildItem $_certificateStore | Where-Object { $_.Subject -match "$domain," }
+    $certs = Get-ChildItem $_certificateStore | Where-Object { $_.Subject -match "$domain" }
     if($certs.length -gt 1) {
         Handle-MultipleMatches $certs $domain
     }
